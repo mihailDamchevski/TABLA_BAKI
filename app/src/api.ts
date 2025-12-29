@@ -111,6 +111,22 @@ class ApiClient {
     return response.json();
   }
 
+  async setStartingPlayer(gameId: string, player: 'white' | 'black'): Promise<GameState> {
+    const response = await fetch(`${this.baseUrl}/games/${gameId}/set-player`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ player }),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to set starting player');
+    }
+    const data = await response.json();
+    return data.game_state;
+  }
+
   async deleteGame(gameId: string): Promise<void> {
     await fetch(`${this.baseUrl}/games/${gameId}`, {
       method: 'DELETE',

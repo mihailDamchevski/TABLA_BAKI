@@ -45,6 +45,10 @@ class MoveRequest(BaseModel):
     die_value: Optional[int] = None
 
 
+class SetPlayerRequest(BaseModel):
+    player: str  # "white" or "black"
+
+
 class PointData(BaseModel):
     number: int
     white_pieces: int
@@ -219,6 +223,25 @@ def get_legal_moves(game_id: str):
         "legal_moves": _get_legal_moves(engine),
         "dice": engine.current_dice
     }
+
+
+@app.post("/games/{game_id}/set-player")
+def set_starting_player(game_id: str, player_data: SetPlayerRequest):
+    """Set the starting player."""
+    if game_id not in games:
+        raise HTTPException(status_code=404, detail="Game not found")
+    
+    engine = games[game_id]
+    player_str = player_data.player.lower()
+    
+    if player_str == "white":
+        engine.current_player = PlayerColor.WHITE
+    elif player_str == "black":
+        engine.current_player = PlayerColor.BLACK
+    else:
+        raise HTTPException(status_code=400, detail="Invalid player. Must be 'white' or 'black'")
+    
+    return {"message": f"Starting player set to {player_str}", "game_state": _get_game_state(game_id)}
 
 
 @app.delete("/games/{game_id}")

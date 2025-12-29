@@ -1,0 +1,45 @@
+{
+  "variant": "gul-bara",
+  "description": "Turkish variant similar to Moultezim. One checker controls a point and doubles are very powerful.",
+  "board": {
+    "points": 24,
+    "initial_setup": {
+      "white": {
+        "24": 2,
+        "13": 5,
+        "8": 3,
+        "6": 5
+      },
+      "black": {
+        "12": 2,
+        "11": 5,
+        "16": 3,
+        "18": 5
+      }
+    }
+  },
+  "movement": {
+    "direction": {
+      "white": -1,
+      "black": -1
+    },
+    "must_use_all_dice": true,
+    "description": "Both players move in the same direction (clockwise)"
+  },
+  "hitting": {
+    "can_hit": false,
+    "send_to_bar": false,
+    "description": "No hitting allowed in Gul Bara"
+  },
+  "bearing_off": {
+    "enabled": true,
+    "all_in_outer_board": true,
+    "description": "All pieces must be in home board before bearing off"
+  },
+  "forced_moves": {
+    "must_use_all_dice": true,
+    "must_use_higher_if_only_one": true,
+    "description": "Must use all dice if possible"
+  }
+}
+

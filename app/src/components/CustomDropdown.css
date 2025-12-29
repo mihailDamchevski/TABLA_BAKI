@@ -1,0 +1,209 @@
+.custom-dropdown-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  z-index: 10;
+}
+
+.custom-dropdown-label {
+  color: white;
+  font-size: 1.4em;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: 'Righteous', 'Bebas Neue', cursive;
+  letter-spacing: 1px;
+}
+
+.custom-dropdown {
+  padding: 15px 30px;
+  font-size: 18px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  min-width: 250px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  user-select: none;
+}
+
+.custom-dropdown:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.custom-dropdown.open {
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3),
+              0 6px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 12px 12px 0 0;
+}
+
+.custom-dropdown-value {
+  flex: 1;
+  text-align: left;
+}
+
+.custom-dropdown-arrow {
+  transition: transform 0.3s ease;
+  font-size: 14px;
+  color: #666;
+  margin-left: 10px;
+}
+
+.custom-dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  animation: slideDown 0.3s ease-out;
+  margin-top: -2px;
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+}
+
+.custom-dropdown-search {
+  padding: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.custom-dropdown-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+.custom-dropdown-search-input:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  background: rgba(255, 255, 255, 1);
+}
+
+.custom-dropdown-search-input::placeholder {
+  color: #999;
+}
+
+.custom-dropdown-options-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-dropdown-option {
+  padding: 12px 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #333;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.custom-dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.custom-dropdown-option:hover {
+  background: rgba(76, 175, 80, 0.1);
+  padding-left: 35px;
+  color: #4CAF50;
+}
+
+.custom-dropdown-option.selected {
+  background: rgba(76, 175, 80, 0.2);
+  color: #2E7D32;
+  font-weight: bold;
+}
+
+.custom-dropdown-option.selected::before {
+  content: '✓';
+  margin-right: 8px;
+  color: #4CAF50;
+}
+
+.custom-dropdown-option.priority {
+  background: rgba(76, 175, 80, 0.05);
+  border-left: 3px solid #4CAF50;
+  font-weight: 600;
+}
+
+.custom-dropdown-option.priority:hover {
+  background: rgba(76, 175, 80, 0.15);
+}
+
+.priority-badge {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.custom-dropdown-no-results {
+  padding: 20px;
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Scrollbar styling */
+.custom-dropdown-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-dropdown-menu::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.custom-dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(76, 175, 80, 0.5);
+  border-radius: 4px;
+}
+
+.custom-dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(76, 175, 80, 0.7);
+}
+
