@@ -46,8 +46,7 @@
 
 .custom-dropdown.open {
   border-color: rgba(255, 255, 255, 1);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3),
-              0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3), 0 6px 20px rgba(0, 0, 0, 0.3);
   border-radius: 12px 12px 0 0;
 }
 
@@ -119,17 +118,6 @@
   overflow-y: auto;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .custom-dropdown-option {
   padding: 12px 30px;
   cursor: pointer;
@@ -188,7 +176,6 @@
   font-size: 14px;
 }
 
-/* Scrollbar styling */
 .custom-dropdown-menu::-webkit-scrollbar {
   width: 8px;
 }
@@ -207,3 +194,7 @@
   background: rgba(76, 175, 80, 0.7);
 }
 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

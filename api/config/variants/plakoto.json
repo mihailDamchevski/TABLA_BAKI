@@ -1,0 +1,52 @@
+{
+  "variant": "plakoto",
+  "description": "Greek variant where opponent's checkers are pinned rather than hit. No hitting allowed.",
+  "board": {
+    "points": 24,
+    "initial_setup": {
+      "white": {
+        "24": 2,
+        "13": 5,
+        "8": 3,
+        "6": 5
+      },
+      "black": {
+        "1": 2,
+        "12": 5,
+        "17": 3,
+        "19": 5
+      }
+    }
+  },
+  "movement": {
+    "direction": {
+      "white": -1,
+      "black": 1
+    },
+    "must_use_all_dice": true,
+    "description": "White moves from 24 to 1, black moves from 1 to 24",
+    "doubles_uses": 4,
+    "combined_moves": {
+      "normal": true,
+      "enter": false,
+      "bear_off": false,
+      "description": "Players can use the sum of both dice in a single normal move only"
+    }
+  },
+  "hitting": {
+    "can_hit": false,
+    "send_to_bar": false,
+    "pin_instead": true,
+    "description": "Cannot hit opponent pieces. Single checkers pin opponent pieces instead."
+  },
+  "bearing_off": {
+    "enabled": true,
+    "all_in_outer_board": true,
+    "description": "All pieces must be in home board before bearing off"
+  },
+  "forced_moves": {
+    "must_use_all_dice": true,
+    "must_use_higher_if_only_one": true,
+    "description": "Must use all dice if possible"
+  }
+}

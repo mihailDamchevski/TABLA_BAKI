@@ -1,4 +1,3 @@
-/* Board Container */
 .board-container {
   display: flex;
   flex-direction: column;
@@ -12,21 +11,7 @@
   position: relative;
 }
 
-.board-info {
-  margin-bottom: 8px;
-  text-align: center;
-  flex-shrink: 0;
-  font-size: 12px;
-}
 
-.bar-info {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  font-weight: bold;
-}
-
-/* Main Board */
 .board {
   display: flex;
   flex-direction: column;
@@ -76,7 +61,6 @@
   z-index: 0;
 }
 
-/* Vertical Bar (Middle) */
 .board-bar-vertical {
   width: 80px;
   min-width: 80px;
@@ -90,6 +74,28 @@
   justify-content: center;
   z-index: 0;
   position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.board-bar-vertical.not-clickable {
+  cursor: default;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.board-bar-vertical.clickable {
+  cursor: pointer;
+}
+
+.board-bar-vertical.clickable:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.board-bar-vertical.selected {
+  outline: 3px solid rgba(255, 215, 0, 0.85);
+  outline-offset: -3px;
+  box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.3), 0 0 18px rgba(255, 215, 0, 0.35);
 }
 
 .bar-section-vertical {
@@ -142,7 +148,6 @@
   border-color: #333333;
 }
 
-/* Board Points (Triangles) */
 .board-point {
   flex: 1;
   display: flex;
@@ -155,7 +160,6 @@
   z-index: 10;
 }
 
-/* Triangle background using pseudo-element */
 .board-point::before {
   content: '';
   position: absolute;
@@ -197,22 +201,17 @@
   animation: pulse-valid 1.5s ease-in-out infinite;
 }
 
-@keyframes pulse-valid {
-  0%, 100% {
-    opacity: 1;
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
-  }
-  50% {
-    opacity: 0.8;
-    box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
-  }
+.board-point.valid-move-combined::before {
+  background: #2196F3;
+  border: 2px solid #1565C0;
+  box-shadow: 0 0 15px rgba(33, 150, 243, 0.6);
+  animation: pulse-valid-combined 1.5s ease-in-out infinite;
 }
 
 .board-point.top {
   flex-direction: column-reverse;
 }
 
-/* Point Number */
 .point-number {
   position: absolute;
   left: 50%;
@@ -234,7 +233,6 @@
   top: 4px;
 }
 
-/* Point Pieces Container */
 .point-pieces {
   flex: 1;
   display: flex;
@@ -262,7 +260,6 @@
   align-items: center;
 }
 
-/* Pieces Stack */
 .pieces-stack {
   display: flex;
   flex-direction: column;
@@ -274,7 +271,6 @@
   transform: translateZ(0);
 }
 
-/* Individual Checkers */
 .piece {
   width: 50px;
   height: 50px;
@@ -315,3 +311,12 @@
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
+@keyframes pulse-valid {
+  0%, 100% { opacity: 1; box-shadow: 0 0 15px rgba(76, 175, 80, 0.6); }
+  50% { opacity: 0.8; box-shadow: 0 0 20px rgba(76, 175, 80, 0.8); }
+}
+
+@keyframes pulse-valid-combined {
+  0%, 100% { opacity: 1; box-shadow: 0 0 15px rgba(33, 150, 243, 0.6); }
+  50% { opacity: 0.8; box-shadow: 0 0 20px rgba(33, 150, 243, 0.8); }
+}

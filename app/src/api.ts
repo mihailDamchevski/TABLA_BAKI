@@ -55,6 +55,14 @@ class ApiClient {
     return data.variants;
   }
 
+  async getVariantRules(variant: string): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/variants/${variant}`);
+    if (!response.ok) {
+      throw new Error('Failed to get variant rules');
+    }
+    return response.json();
+  }
+
   async createGame(variant: string = 'standard', gameId?: string): Promise<GameState> {
     const response = await fetch(`${this.baseUrl}/games`, {
       method: 'POST',

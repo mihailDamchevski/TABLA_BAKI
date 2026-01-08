@@ -45,15 +45,6 @@ npm run dev
 
 Frontend will be available at http://localhost:3000 (or http://localhost:5173 if port 3000 is in use)
 
-## Game Engine
-
-The core game engine is in the `game-engine` folder. It can be used standalone:
-
-```bash
-cd game-engine
-python main.py
-```
-
 ## API Endpoints
 
 - `GET /variants` - List available variants
@@ -61,26 +52,58 @@ python main.py
 - `GET /games/{game_id}` - Get game state
 - `POST /games/{game_id}/roll` - Roll dice
 - `POST /games/{game_id}/move` - Make a move
+- `POST /games/{game_id}/set-player` - Set starting player
 - `GET /games/{game_id}/legal-moves` - Get legal moves
 - `DELETE /games/{game_id}` - Delete game
 
-See `api/README.md` for detailed API documentation.
+## Supported Variants
+
+- **Standard** - Classic backgammon rules
+- **Portes** - Greek variant similar to standard
+- **Plakoto** - Greek variant with pinning instead of hitting
+- **Fevga** - Greek variant, no hitting, same-direction movement
+- **Gioul** - Turkish variant combining Plakoto, Moultezim, and Gul Bara features
+- **Gul Bara** - Turkish variant, no hitting, powerful doubles
+- **Moultezim** - Turkish variant, no hitting, same-direction
+- **Narde** - Russian variant, no hitting, same-direction
+- **Tawula** - Turkish backgammon, same-direction movement
+- **Russian Backgammon** - True race variant, same-direction
+- **Shesh Besh** - Turkish variant similar to standard
+- **Takhteh** - Persian variant similar to standard
+- **Hyper-Backgammon** - Variant with only 3 checkers per player
+- **LongGammon** - All checkers start on opponent's one-point
+- **Nackgammon** - Standard with two additional back checkers
 
 ## Features
 
-- **Rule-based System**: Declarative rule definitions in JSON format
-- **Multiple Variants**: Support for different backgammon variants
+- **Rule-Driven Engine**: All game logic follows variant-specific rules from JSON configs
+- **15+ Variants**: Support for major backgammon variants
+- **Variant-Specific Rules**: 
+  - Movement direction (opposite or same-direction)
+  - Hitting vs pinning mechanics
+  - Doubles handling (configurable uses)
+  - Combined moves policy (normal/enter/bear-off)
+  - Bar entry blocking
+  - Bearing off rules
 - **Move Validation**: Validates moves against variant-specific rules
-- **Rule Explanations**: Explains why moves are legal or illegal
-- **REST API**: FastAPI backend for web integration
-- **React Frontend**: Modern web UI
-- **Extensible**: Easy to add new variants
+- **Automatic Turn Management**: Handles bar blocking, dice consumption, turn switching
+- **REST API**: FastAPI backend with automatic API documentation
+- **Modern React UI**: TypeScript frontend with animations and responsive design
+- **Extensible**: Easy to add new variants via JSON configs
 
 ## Development
 
 ### Adding New Variants
 
-Create a JSON file in `game-engine/config/variants/` following the structure of `standard.json`.
+Create a JSON file in `api/config/variants/` following the structure of `standard.json`. Required fields:
+
+- `movement.direction` - Movement directions for each color (-1 or 1)
+- `movement.doubles_uses` - Number of moves when doubles are rolled (default: 4)
+- `movement.combined_moves` - Policy for sum-of-dice moves
+- `hitting.can_hit` - Whether hitting is allowed
+- `hitting.pin_instead` - Whether to pin instead of hit (for Plakoto/Gioul)
+- `bearing_off.enabled` - Whether bearing off is allowed
+- `forced_moves` - Rules for forced move scenarios
 
 ### API Development
 

@@ -1,47 +1,80 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Dice.css';
 
 interface DiceProps {
   dice: [number, number] | null;
-  onRoll: () => void;
+  onRoll: () => void | Promise<void>;
   disabled?: boolean;
 }
 
 const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
   const [isRolling, setIsRolling] = useState(false);
   const [displayValues, setDisplayValues] = useState<[number, number] | null>(null);
+  const rollRequestedRef = useRef(false);
+  const minRollEndAtRef = useRef<number>(0);
+  const intervalRef = useRef<number | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (dice) {
+    // Keep the UI in sync with dice updates WITHOUT automatically triggering animations.
+    if (!isRolling) {
+      setDisplayValues(dice ?? null);
+      return;
+    }
+
+    // If a user initiated a roll and dice arrived, finish the rolling animation.
+    if (rollRequestedRef.current && dice) {
+      const remaining = Math.max(0, minRollEndAtRef.current - Date.now());
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = window.setTimeout(() => {
+        if (intervalRef.current) window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        timeoutRef.current = null;
+        rollRequestedRef.current = false;
+        setIsRolling(false);
+        setDisplayValues(dice);
+      }, remaining);
+    }
+  }, [dice, isRolling]);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) window.clearInterval(intervalRef.current);
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const handleClick = async () => {
+    if (!disabled && !isRolling) {
+      rollRequestedRef.current = true;
+      minRollEndAtRef.current = Date.now() + 1000;
       setIsRolling(true);
-      setDisplayValues(null);
-      
-      // Shake animation duration
-      const shakeDuration = 1000;
-      
-      // Show random numbers during shake
-      const interval = setInterval(() => {
+
+      if (intervalRef.current) window.clearInterval(intervalRef.current);
+      intervalRef.current = window.setInterval(() => {
         setDisplayValues([
           Math.floor(Math.random() * 6) + 1,
           Math.floor(Math.random() * 6) + 1
         ]);
       }, 100);
-      
-      // After shake, show actual dice values
-      setTimeout(() => {
-        clearInterval(interval);
-        setIsRolling(false);
-        setDisplayValues(dice);
-      }, shakeDuration);
-    } else {
-      setDisplayValues(null);
-      setIsRolling(false);
-    }
-  }, [dice]);
 
-  const handleClick = () => {
-    if (!disabled && !isRolling) {
-      onRoll();
+      // Fallback: if the roll request fails (or dice never arrives), stop shaking after the minimum duration.
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = window.setTimeout(() => {
+        if (!rollRequestedRef.current) return;
+        if (intervalRef.current) window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        timeoutRef.current = null;
+        rollRequestedRef.current = false;
+        setIsRolling(false);
+        setDisplayValues(dice ?? null);
+      }, Math.max(0, minRollEndAtRef.current - Date.now()) + 50);
+
+      try {
+        await onRoll();
+      } catch {
+        // The fallback timeout above will clean up the animation.
+      }
     }
   };
 

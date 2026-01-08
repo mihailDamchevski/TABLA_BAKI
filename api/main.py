@@ -4,12 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Tuple
-import sys
 from pathlib import Path
-
-# Add game-engine to path
-game_engine_path = Path(__file__).parent.parent / "game-engine"
-sys.path.insert(0, str(game_engine_path))
 
 from game.engine import GameEngine
 from game.board import PlayerColor
@@ -38,7 +33,6 @@ class GameCreate(BaseModel):
 
 
 class MoveRequest(BaseModel):
-    game_id: str
     from_point: Optional[int] = None
     to_point: Optional[int] = None
     move_type: str  # "normal", "enter", "bear_off"
@@ -96,12 +90,30 @@ def list_variants():
     return {"variants": variants}
 
 
+@app.get("/variants/{variant_name}")
+def get_variant_rules(variant_name: str):
+    """Get rules for a specific variant."""
+    import json
+    parser = RuleParser()
+    
+    if variant_name not in parser.list_variants():
+        raise HTTPException(status_code=404, detail=f"Variant '{variant_name}' not found")
+    
+    api_dir = Path(__file__).parent
+    config_file = api_dir / "config" / "variants" / f"{variant_name}.json"
+    
+    with open(config_file, 'r') as f:
+        config = json.load(f)
+    
+    return config
+
+
 @app.post("/games", response_model=GameState)
 def create_game(game_data: GameCreate):
     """Create a new game."""
     import json
     
-    game_id = game_data.game_id or f"game_{len(games)}"
+    game_id = game_data.game_id or f"game_{len(games) + 1}"
     
     # Load rules
     parser = RuleParser()
@@ -114,7 +126,8 @@ def create_game(game_data: GameCreate):
     engine = GameEngine(rules)
     
     # Load initial setup
-    config_file = game_engine_path / "config" / "variants" / f"{game_data.variant}.json"
+    api_dir = Path(__file__).parent
+    config_file = api_dir / "config" / "variants" / f"{game_data.variant}.json"
     with open(config_file, 'r') as f:
         config = json.load(f)
     
@@ -150,10 +163,21 @@ def roll_dice(game_id: str):
         raise HTTPException(status_code=400, detail="Game is over")
     
     dice = engine.roll_dice()
-    
+    legal_moves = _get_legal_moves(engine)
+
+    # If a player has no legal moves (e.g., blocked on bar), skip turn
+    if not legal_moves and not engine.game_over:
+        engine.switch_player()
+        return {
+            "dice": dice,
+            "legal_moves": [],
+            "game_state": _get_game_state(game_id),
+            "message": "No legal moves; turn passed to opponent."
+        }
+
     return {
         "dice": dice,
-        "legal_moves": _get_legal_moves(engine),
+        "legal_moves": legal_moves,
         "game_state": _get_game_state(game_id)
     }
 
@@ -197,9 +221,15 @@ def make_move(game_id: str, move_request: MoveRequest):
     if not success:
         raise HTTPException(status_code=400, detail=f"Invalid move: {'; '.join(explanations)}")
     
-    # Switch player if game not over
+    # Only switch player if all dice are used or no moves remain
     if not engine.game_over:
-        engine.switch_player()
+        if not engine.has_remaining_moves():
+            engine.switch_player()
+        else:
+            # Check if there are any legal moves remaining
+            remaining_moves = engine.get_legal_moves()
+            if not remaining_moves:
+                engine.switch_player()
     
     return {
         "success": True,

@@ -1,0 +1,668 @@
+{
+  "fevga.json": {
+    "variant": "fevga",
+    "description": "Greek variant similar to Moultezim and Narde. Features no hitting and players move in the same direction.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "12": 2,
+          "11": 5,
+          "16": 3,
+          "18": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": -1
+      },
+      "must_use_all_dice": true,
+      "description": "Both players move in the same direction (clockwise)"
+    },
+    "hitting": {
+      "can_hit": false,
+      "send_to_bar": false,
+      "description": "No hitting allowed in Fevga"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "gioul.json": {
+    "variant": "gioul",
+    "description": "Gioul originated in Turkey and is played throughout the Middle East. Combines features of Plakoto, Moultezim, and Gul Bara.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "1": 2,
+          "12": 5,
+          "17": 3,
+          "19": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": 1
+      },
+      "must_use_all_dice": true,
+      "description": "White moves from 24 to 1, black moves from 1 to 24"
+    },
+    "hitting": {
+      "can_hit": false,
+      "send_to_bar": false,
+      "pin_instead": true,
+      "description": "Cannot hit opponent pieces. Single checkers pin opponent pieces instead."
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "gul-bara.json": {
+    "variant": "gul-bara",
+    "description": "Turkish variant similar to Moultezim. One checker controls a point and doubles are very powerful.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "12": 2,
+          "11": 5,
+          "16": 3,
+          "18": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": -1
+      },
+      "must_use_all_dice": true,
+      "description": "Both players move in the same direction (clockwise)"
+    },
+    "hitting": {
+      "can_hit": false,
+      "send_to_bar": false,
+      "description": "No hitting allowed in Gul Bara"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "hyper-backgammon.json": {
+    "variant": "hyper-backgammon",
+    "description": "Hyper-Backgammon variant played with only three checkers per player.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 1,
+          "23": 1,
+          "22": 1
+        },
+        "black": {
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": 1
+      },
+      "must_use_all_dice": true,
+      "description": "White moves from 24 to 1, black moves from 1 to 24"
+    },
+    "hitting": {
+      "can_hit": true,
+      "send_to_bar": true,
+      "description": "Hitting a single opponent piece sends it to the bar"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "longgammon.json": {
+    "variant": "longgammon",
+    "description": "LongGammon variant where each player starts with all checkers on the opponent's one-point.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "1": 15
+        },
+        "black": {
+          "24": 15
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": 1
+      },
+      "must_use_all_dice": true,
+      "description": "White moves from 24 to 1, black moves from 1 to 24"
+    },
+    "hitting": {
+      "can_hit": true,
+      "send_to_bar": true,
+      "description": "Hitting a single opponent piece sends it to the bar"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "moultezim.json": {
+    "variant": "moultezim",
+    "description": "Turkish variant similar to Narde and Fevga. Features no hitting and players move in the same direction.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "12": 2,
+          "11": 5,
+          "16": 3,
+          "18": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": -1
+      },
+      "must_use_all_dice": true,
+      "description": "Both players move in the same direction (clockwise)"
+    },
+    "hitting": {
+      "can_hit": false,
+      "send_to_bar": false,
+      "description": "No hitting allowed in Moultezim"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "nackgammon.json": {
+    "variant": "nackgammon",
+    "description": "Nackgammon variant invented by Nack Ballard. Same as standard except each player starts with two additional back checkers.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "23": 2,
+          "22": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "1": 2,
+          "2": 2,
+          "3": 2,
+          "12": 5,
+          "17": 3,
+          "19": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": 1
+      },
+      "must_use_all_dice": true,
+      "description": "White moves from 24 to 1, black moves from 1 to 24"
+    },
+    "hitting": {
+      "can_hit": true,
+      "send_to_bar": true,
+      "description": "Hitting a single opponent piece sends it to the bar"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "narde.json": {
+    "variant": "narde",
+    "description": "Russian variant similar to Moultezim and Fevga. Features no hitting and players move in the same direction.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "12": 2,
+          "11": 5,
+          "16": 3,
+          "18": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": -1
+      },
+      "must_use_all_dice": true,
+      "description": "Both players move in the same direction (clockwise)"
+    },
+    "hitting": {
+      "can_hit": false,
+      "send_to_bar": false,
+      "description": "No hitting allowed in Narde"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "plakoto.json": {
+    "variant": "plakoto",
+    "description": "Greek variant where opponent's checkers are pinned rather than hit. No hitting allowed.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "1": 2,
+          "12": 5,
+          "17": 3,
+          "19": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": 1
+      },
+      "must_use_all_dice": true,
+      "description": "White moves from 24 to 1, black moves from 1 to 24"
+    },
+    "hitting": {
+      "can_hit": false,
+      "send_to_bar": false,
+      "pin_instead": true,
+      "description": "Cannot hit opponent pieces. Single checkers pin opponent pieces instead."
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "portes.json": {
+    "variant": "portes",
+    "description": "Greek variant very similar to Western backgammon.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "1": 2,
+          "12": 5,
+          "17": 3,
+          "19": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": 1
+      },
+      "must_use_all_dice": true,
+      "description": "White moves from 24 to 1, black moves from 1 to 24"
+    },
+    "hitting": {
+      "can_hit": true,
+      "send_to_bar": true,
+      "description": "Hitting a single opponent piece sends it to the bar"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "russian-backgammon.json": {
+    "variant": "russian-backgammon",
+    "description": "Russian Backgammon is a true race, with both players moving their checkers in the same direction and bearing off from the same table.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "12": 2,
+          "11": 5,
+          "16": 3,
+          "18": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": -1
+      },
+      "must_use_all_dice": true,
+      "description": "Both players move in the same direction (clockwise)"
+    },
+    "hitting": {
+      "can_hit": true,
+      "send_to_bar": true,
+      "description": "Hitting a single opponent piece sends it to the bar"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "shesh-besh.json": {
+    "variant": "shesh-besh",
+    "description": "Turkish variant very similar to Western backgammon.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "1": 2,
+          "12": 5,
+          "17": 3,
+          "19": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": 1
+      },
+      "must_use_all_dice": true,
+      "description": "White moves from 24 to 1, black moves from 1 to 24"
+    },
+    "hitting": {
+      "can_hit": true,
+      "send_to_bar": true,
+      "description": "Hitting a single opponent piece sends it to the bar"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "standard.json": {
+    "variant": "standard",
+    "description": "Standard backgammon rules",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "1": 2,
+          "12": 5,
+          "17": 3,
+          "19": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": 1
+      },
+      "must_use_all_dice": true,
+      "doubles_uses": 4,
+      "doubles_rule": "When doubles are rolled (e.g., 2-2), the player gets 4 moves of that value instead of 2",
+      "combined_moves": {
+        "normal": true,
+        "enter": false,
+        "bear_off": false,
+        "description": "Players can use the sum of both dice in a single normal move (e.g., 2+3=5); no combined enter or bear-off."
+      },
+      "description": "White moves from 24 to 1, black moves from 1 to 24. Players must use all dice before their turn ends."
+    },
+    "hitting": {
+      "can_hit": true,
+      "send_to_bar": true,
+      "description": "Hitting a single opponent piece sends it to the bar"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board (points 1-6 for white, 19-24 for black) before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible, and must use higher die if only one can be used"
+    }
+  },
+  "takhteh.json": {
+    "variant": "takhteh",
+    "description": "Persian name for backgammon. Very similar to Western backgammon.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "1": 2,
+          "12": 5,
+          "17": 3,
+          "19": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": 1
+      },
+      "must_use_all_dice": true,
+      "description": "White moves from 24 to 1, black moves from 1 to 24"
+    },
+    "hitting": {
+      "can_hit": true,
+      "send_to_bar": true,
+      "description": "Hitting a single opponent piece sends it to the bar"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  },
+  "tawula.json": {
+    "variant": "tawula",
+    "description": "Turkish backgammon. Players start at diagonally-opposite corners and move around the board in the same direction.",
+    "board": {
+      "points": 24,
+      "initial_setup": {
+        "white": {
+          "24": 2,
+          "13": 5,
+          "8": 3,
+          "6": 5
+        },
+        "black": {
+          "12": 2,
+          "11": 5,
+          "16": 3,
+          "18": 5
+        }
+      }
+    },
+    "movement": {
+      "direction": {
+        "white": -1,
+        "black": -1
+      },
+      "must_use_all_dice": true,
+      "description": "Both players move in the same direction (clockwise)"
+    },
+    "hitting": {
+      "can_hit": true,
+      "send_to_bar": true,
+      "description": "Hitting a single opponent piece sends it to the bar"
+    },
+    "bearing_off": {
+      "enabled": true,
+      "all_in_outer_board": true,
+      "description": "All pieces must be in home board before bearing off"
+    },
+    "forced_moves": {
+      "must_use_all_dice": true,
+      "must_use_higher_if_only_one": true,
+      "description": "Must use all dice if possible"
+    }
+  }
+}
