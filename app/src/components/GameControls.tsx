@@ -28,13 +28,6 @@ const GameControls: React.FC<GameControlsProps> = ({
   const handleManualMove = () => {
     if (!fromPoint || !toPoint) return;
 
-    const move: LegalMove = {
-      move_type: 'normal',
-      from_point: parseInt(fromPoint),
-      to_point: parseInt(toPoint),
-      die_value: 0,
-    };
-
     // Find matching legal move
     const legalMove = gameState.legal_moves.find(
       (m) =>

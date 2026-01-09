@@ -88,11 +88,6 @@ const VariantRulesModal: React.FC<VariantRulesModalProps> = ({ isOpen, variant, 
                         <strong>Doubles:</strong> When doubles are rolled (e.g., 2-2), the player gets {rules.movement.doubles_uses} moves of that value instead of 2
                       </li>
                     )}
-                    {rules.movement.doubles_rule && (
-                      <li>
-                        <em>{rules.movement.doubles_rule}</em>
-                      </li>
-                    )}
                     {rules.movement.combined_moves && (
                       <li>
                         <strong>Combined Moves:</strong>{' '}

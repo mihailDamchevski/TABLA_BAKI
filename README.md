@@ -113,20 +113,48 @@ Return GameState → Frontend updates UI
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Option 1: Docker (Recommended)
+
+The easiest way to run the application is using Docker Compose:
+
+```bash
+# Clone the repository
+git clone https://github.com/mihailDamchevski/TABLA_BAKI.git
+cd TABLA_BAKI
+
+# Build and start all services
+docker-compose up --build
+
+# Or run in detached mode
+docker-compose up -d --build
+```
+
+The application will be available at:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+
+To stop the containers:
+```bash
+docker-compose down
+```
+
+### Option 2: Local Development
+
+#### Prerequisites
 
 - Python 3.8+
 - Node.js 16+
 - npm or yarn
 
-### 1. Clone the Repository
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/mihailDamchevski/TABLA_BAKI.git
 cd TABLA_BAKI
 ```
 
-### 2. Backend Setup
+#### 2. Backend Setup
 
 ```bash
 cd api
@@ -141,7 +169,7 @@ The API will be available at:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 
-### 3. Frontend Setup
+#### 3. Frontend Setup
 
 ```bash
 cd app

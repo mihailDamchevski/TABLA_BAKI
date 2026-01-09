@@ -25,7 +25,7 @@ function App() {
   const [validMoves, setValidMoves] = useState<LegalMove[]>([]);
   const [showVariantRules, setShowVariantRules] = useState(false);
   const [variantRules, setVariantRules] = useState<VariantRules | null>(null);
-  const [loadingRules, setLoadingRules] = useState(false);
+  const [_loadingRules, setLoadingRules] = useState(false);
   const [firstPlayerRollDone, setFirstPlayerRollDone] = useState(false);
   const [previousBoard, setPreviousBoard] = useState<BoardState | null>(null);
   const [lastMove, setLastMove] = useState<{ from_point: number; to_point: number; move_type: string } | null>(null);
@@ -287,8 +287,8 @@ function App() {
     try {
       setPreviousBoard({ ...gameState.board });
       setLastMove({
-        from_point: move.from_point,
-        to_point: move.to_point,
+        from_point: move.from_point ?? 0,
+        to_point: move.to_point ?? 0,
         move_type: move.move_type
       });
       
