@@ -5,9 +5,10 @@ import Dice from './components/Dice';
 import FirstPlayerRollModal from './components/FirstPlayerRollModal';
 import FirstPlayerResultModal from './components/FirstPlayerResultModal';
 import VariantRulesModal from './components/VariantRulesModal';
+import ExitConfirmModal from './components/ExitConfirmModal';
 import CustomDropdown from './components/CustomDropdown';
 import { api } from './api';
-import type { GameState, LegalMove } from './api';
+import type { GameState, LegalMove, BoardState } from './api';
 import type { VariantRules } from './components/VariantRulesModal';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
   const [firstPlayerRollDone, setFirstPlayerRollDone] = useState(false);
   const [previousBoard, setPreviousBoard] = useState<BoardState | null>(null);
   const [lastMove, setLastMove] = useState<{ from_point: number; to_point: number; move_type: string } | null>(null);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   useEffect(() => {
     loadVariants();
@@ -121,6 +123,28 @@ function App() {
       await loadVariantRules(variantToShow);
     }
     setShowVariantRules(true);
+  };
+
+  const handleExitToMenu = () => {
+    setShowExitConfirm(true);
+  };
+
+  const confirmExit = () => {
+    setGameState(null);
+    setSelectedPoint(null);
+    setValidMoves([]);
+    setShowFirstPlayerRoll(false);
+    setShowFirstPlayerResult(false);
+    setFirstPlayer(null);
+    setFirstPlayerRollDone(false);
+    setPreviousBoard(null);
+    setLastMove(null);
+    setError(null);
+    setShowExitConfirm(false);
+  };
+
+  const cancelExit = () => {
+    setShowExitConfirm(false);
   };
 
   const handleFirstPlayerRollComplete = async (player: 'white' | 'black') => {
@@ -322,23 +346,11 @@ function App() {
   return (
     <div className="App">
       <header className={`App-header ${gameState.board.current_player ? `${gameState.board.current_player}-turn` : ''}`}>
-        <div className="header-top">
-          <div className="header-title">
-            <h1>TABLA BAKI</h1>
-            <div className="header-subtitle">Backgammon</div>
-          </div>
-
-          <div className="turn-indicator">
-            <div className={`player-badge ${gameState.board.current_player ?? 'none'}`}>
-              <span className="player-dot" />
-              <span className="player-text">
-                {gameState.board.current_player ? `${gameState.board.current_player.toUpperCase()} TO MOVE` : '—'}
-              </span>
-            </div>
-          </div>
+        <div className="header-title-row">
+          <h1>🔥 TABLA BAKI</h1>
         </div>
 
-        <div className="game-info">
+        <div className="header-content-row">
           <div className="player-status-header white-player-header">
             <div className="player-status-compact">
               <div className="player-icon-small white-icon">⚪</div>
@@ -378,20 +390,7 @@ function App() {
             </div>
           </div>
 
-          <div className="game-info-center">
-            <span className="info-chip">
-              Variant: <strong>{gameState.variant}</strong>
-              <button
-                className="variant-info-button"
-                onClick={handleShowVariantRules}
-                title="View variant rules"
-              >
-                <span className="variant-info-button-icon">⚠️</span>
-                <span>Help</span>
-              </button>
-            </span>
-            <span className="info-chip">Game: <strong>{gameState.game_id}</strong></span>
-          </div>
+          <div className="header-spacer"></div>
 
           <div className="player-status-header black-player-header">
             <div className="player-status-compact">
@@ -431,6 +430,24 @@ function App() {
               </div>
             </div>
           </div>
+
+          <div className="header-right-controls">
+            <span className="variant-chip">{gameState.variant}</span>
+            <button
+              className="variant-help-button"
+              onClick={handleShowVariantRules}
+              title="View variant rules"
+            >
+              ⚠️
+            </button>
+            <button
+              className="exit-button"
+              onClick={handleExitToMenu}
+              title="Exit to menu"
+            >
+              🚪
+            </button>
+          </div>
         </div>
       </header>
       
@@ -464,55 +481,15 @@ function App() {
               </div>
             </div>
           </div>
-          {selectedPoint !== null && validMoves.length > 0 && (
-            <div className="valid-moves-list">
-              <h3>Valid Moves from {selectedPoint === 0 ? 'Bar' : `Point ${selectedPoint}`}</h3>
-              <div className="moves-container">
-                {validMoves.map((move, idx) => {
-                  const dice = gameState.board.dice;
-                  const isCombinedMove = !!dice && move.move_type === 'normal' && move.die_value === dice[0] + dice[1];
-                  const dieDisplay = isCombinedMove 
-                    ? `Both dice (${dice[0]} + ${dice[1]} = ${move.die_value})`
-                    : `Die: ${move.die_value}`;
-                  
-                  return (
-                    <div key={idx} className={`move-item ${isCombinedMove ? 'combined-move' : ''}`}>
-                      {move.move_type === 'normal' && move.to_point !== null ? (
-                        <span>
-                          Point {move.from_point} → Point {move.to_point} ({dieDisplay})
-                        </span>
-                      ) : move.move_type === 'enter' ? (
-                        <span>
-                          Enter from Bar → Point {move.to_point} ({dieDisplay})
-                        </span>
-                      ) : move.move_type === 'bear_off' ? (
-                        <div className="move-row">
-                          <span>
-                            Bear off from Point {move.from_point} ({dieDisplay})
-                          </span>
-                          <button
-                            className="move-action"
-                            onClick={() => makeMove(move)}
-                            disabled={loading}
-                          >
-                            Bear off
-                          </button>
-                        </div>
-                      ) : (
-                        <span>Move {idx + 1}</span>
-                      )}
-                    </div>
-                  );
-                })}
+          <div className="ad-placeholder">
+            <div className="ad-content">
+              <div className="ad-icon">📢</div>
+              <div className="ad-text">
+                <div className="ad-label">Advertisement</div>
+                <div className="ad-size">300 × 250</div>
               </div>
             </div>
-          )}
-          {selectedPoint !== null && validMoves.length === 0 && gameState.board.dice && (
-            <div className="valid-moves-list">
-              <h3>No Valid Moves</h3>
-              <p>No valid moves available from {selectedPoint === 0 ? 'Bar' : `point ${selectedPoint}`}</p>
-            </div>
-          )}
+          </div>
         </div>
       </div>
       
@@ -538,6 +515,12 @@ function App() {
         variant={gameState?.variant || selectedVariant}
         rules={variantRules}
         onClose={handleVariantRulesClose}
+      />
+      
+      <ExitConfirmModal
+        isOpen={showExitConfirm}
+        onConfirm={confirmExit}
+        onCancel={cancelExit}
       />
     </div>
   );
