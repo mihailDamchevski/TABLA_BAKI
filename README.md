@@ -556,6 +556,27 @@ The variant will automatically appear in the `/variants` endpoint!
 
 ## 🔧 Development Guide
 
+### VS Code Tasks
+
+The project includes pre-configured VS Code tasks for common development tasks. To use them:
+
+1. **Open the project folder** in VS Code (not individual files)
+2. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac)
+3. Type "Tasks: Run Task" and select a task
+
+**Available Tasks:**
+- **Start API Server** - Runs the FastAPI backend
+- **Start React App** - Runs the React frontend dev server
+- **Start All Services** - Runs both API and React app in parallel
+- **Install API Dependencies** - Installs Python dependencies
+- **Install React Dependencies** - Installs Node.js dependencies
+- **Install All Dependencies** - Installs both API and React dependencies
+
+**Troubleshooting on Windows:**
+- Make sure you've opened the project folder (File → Open Folder)
+- Reload VS Code after pulling changes (`Ctrl+Shift+P` → "Developer: Reload Window")
+- Tasks are cross-platform compatible and work with both PowerShell and CMD
+
 ### Understanding the Rule System
 
 The game engine uses a rule-driven architecture:
