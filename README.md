@@ -572,10 +572,10 @@ The project includes pre-configured VS Code tasks for common development tasks. 
 - **Install React Dependencies** - Installs Node.js dependencies
 - **Install All Dependencies** - Installs both API and React dependencies
 
-**Troubleshooting on Windows:**
+**Troubleshooting:**
 - Make sure you've opened the project folder (File → Open Folder)
 - Reload VS Code after pulling changes (`Ctrl+Shift+P` → "Developer: Reload Window")
-- Tasks are cross-platform compatible and work with both PowerShell and CMD
+- Tasks are cross-platform compatible
 
 ### Understanding the Rule System
 

@@ -5,9 +5,6 @@
       "label": "Start API Server",
       "type": "shell",
       "command": "python main.py",
-      "windows": {
-        "command": "python main.py"
-      },
       "options": {
         "cwd": "${workspaceFolder}/api"
       },
@@ -26,9 +23,6 @@
       "label": "Start React App",
       "type": "shell",
       "command": "npm run dev",
-      "windows": {
-        "command": "npm run dev"
-      },
       "options": {
         "cwd": "${workspaceFolder}/app"
       },
@@ -64,9 +58,6 @@
       "label": "Install API Dependencies",
       "type": "shell",
       "command": "pip install -r requirements.txt",
-      "windows": {
-        "command": "pip install -r requirements.txt"
-      },
       "options": {
         "cwd": "${workspaceFolder}/api"
       },
@@ -80,9 +71,6 @@
       "label": "Install React Dependencies",
       "type": "shell",
       "command": "npm install",
-      "windows": {
-        "command": "npm install"
-      },
       "options": {
         "cwd": "${workspaceFolder}/app"
       },
