@@ -617,7 +617,7 @@ function App() {
               gameState.board.game_over || 
               (gameMode === 'ai' && gameState.board.current_player !== humanPlayer)
             }
-            currentPlayer={gameState.board.current_player}
+            currentPlayer={gameState.board.current_player as 'white' | 'black' | null}
           />
           
           <div className="w-full max-w-[300px] h-[250px] mx-auto bg-gradient-to-br from-white/10 to-white/5 border-2 border-dashed border-white/30 rounded-xl flex items-center justify-center backdrop-blur-sm relative overflow-hidden before:content-[''] before:absolute before:top-0 before:-left-full before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:animate-[shimmer_3s_infinite]">
