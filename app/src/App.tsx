@@ -26,6 +26,8 @@ function App() {
   const [variantRules, setVariantRules] = useState<VariantRules | null>(null);
   const [loadingRules, setLoadingRules] = useState(false);
   const [firstPlayerRollDone, setFirstPlayerRollDone] = useState(false);
+  const [previousBoard, setPreviousBoard] = useState<BoardState | null>(null);
+  const [lastMove, setLastMove] = useState<{ from_point: number; to_point: number; move_type: string } | null>(null);
 
   useEffect(() => {
     loadVariants();
@@ -164,16 +166,33 @@ function App() {
     setLoading(true);
     setError(null);
     try {
+      setPreviousBoard({ ...gameState.board });
+      setLastMove({
+        from_point: move.from_point,
+        to_point: move.to_point,
+        move_type: move.move_type
+      });
+      
       const moveRequest = {
         from_point: move.from_point,
         to_point: move.to_point,
         move_type: move.move_type,
         die_value: move.die_value,
       };
+      
       const result = await api.makeMove(gameState.game_id, moveRequest);
-      setGameState(result.game_state);
-      setSelectedPoint(null);
-      setValidMoves([]);
+      
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            setGameState(result.game_state);
+            setSelectedPoint(null);
+            setValidMoves([]);
+            setPreviousBoard(null);
+            setLastMove(null);
+          }, 800);
+        });
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to make move');
     } finally {
@@ -266,11 +285,13 @@ function App() {
         <div className="start-screen">
           {/* Floating particles */}
           <div className="particles">
-            {Array.from({ length: 20 }).map((_, i) => (
+            {Array.from({ length: 30 }).map((_, i) => (
               <div key={i} className="particle" style={{
                 left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 20}s`,
-                animationDuration: `${15 + Math.random() * 10}s`
+                animationDelay: `${Math.random() * 0.5}s`,
+                animationDuration: `${15 + Math.random() * 10}s`,
+                top: `${Math.random() * 100}%`,
+                transform: `translateY(${Math.random() * 200 - 100}px)`
               }}></div>
             ))}
           </div>
@@ -423,6 +444,8 @@ function App() {
             selectedPoint={selectedPoint}
             validMoves={validMoves}
             currentPlayer={gameState.board.current_player}
+            previousBoard={previousBoard}
+            lastMove={lastMove}
           />
         </div>
         <div className="dice-section">
