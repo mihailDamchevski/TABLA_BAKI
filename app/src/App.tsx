@@ -466,119 +466,125 @@ function App() {
   }
 
   const currentPlayerClass = gameState.board.current_player ? `${gameState.board.current_player}-turn` : '';
-  const headerBgClass = currentPlayerClass === 'white-turn' 
-    ? 'bg-gradient-to-b from-white/95 to-[#f5f5f5]/95 text-[#222] border-b-[rgba(0,0,0,0.1)]'
-    : 'bg-gradient-to-b from-[#0a1a0a] to-[#1a2a1a] text-[#f4f4f4] border-b-[rgba(184,134,11,0.5)]';
+  const isWhiteTurn = currentPlayerClass === 'white-turn';
 
   return (
     <div className="h-screen w-screen flex flex-col bg-[radial-gradient(circle_at_20%_30%,rgba(0,100,0,0.4)_0%,transparent_50%),radial-gradient(circle_at_80%_70%,rgba(139,69,19,0.3)_0%,transparent_50%),radial-gradient(circle_at_50%_50%,rgba(184,134,11,0.2)_0%,transparent_60%),linear-gradient(135deg,#0a1a0a_0%,#1a2a1a_25%,#0f1419_50%,#1a1a2a_75%,#0a0a1a_100%)] bg-[length:200%_200%,200%_200%,200%_200%,100%_100%] animate-[casinoGlow_20s_ease_infinite] overflow-hidden">
-      <header className={`${headerBgClass} py-2 text-center shadow-[0_4px_15px_rgba(0,0,0,0.4)] flex-shrink-0 transition-all flex flex-col gap-3 border-b-2 flex-shrink-0`}>
-        <div className="flex items-center justify-center w-full px-5">
-          <h1 className={`m-0 text-[2.8em] tracking-[3px] whitespace-nowrap font-['Bungee','Black_Ops_One','Audiowide',cursive] font-black drop-shadow-[0_0_10px_rgba(255,215,0,0.8),0_0_20px_rgba(255,140,0,0.6),0_0_30px_rgba(255,69,0,0.4),2px_2px_4px_rgba(0,0,0,0.5)] bg-gradient-to-br from-[#ffd700] via-[#ff8c00] to-[#ff4500] bg-clip-text text-transparent animate-[titleGlow_3s_ease-in-out_infinite] overflow-hidden text-ellipsis ${currentPlayerClass === 'white-turn' ? 'text-[#222]' : ''}`}>🔥 TABLA BAKI</h1>
-        </div>
+      <header 
+        className={`relative py-2.5 px-4 shadow-[0_4px_15px_rgba(0,0,0,0.4)] flex-shrink-0 border-b-2 overflow-hidden transition-[color,border-color] duration-700 ease-in-out ${
+          isWhiteTurn ? 'text-[#222] border-b-[rgba(0,0,0,0.1)]' : 'text-[#f4f4f4] border-b-[rgba(184,134,11,0.5)]'
+        }`}
+      >
+        {/* Beige background layer */}
+        <div 
+          className={`absolute inset-0 bg-gradient-to-r from-[#f5e6d3] via-[#e8d5c4] to-[#f5e6d3] transition-opacity duration-700 ease-in-out pointer-events-none ${
+            isWhiteTurn ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+        {/* Dark background layer */}
+        <div 
+          className={`absolute inset-0 bg-gradient-to-r from-[#0a1a0a] via-[#1a2a1a] to-[#0a1a0a] transition-opacity duration-700 ease-in-out pointer-events-none ${
+            isWhiteTurn ? 'opacity-0' : 'opacity-100'
+          }`}
+        />
+        <div className="relative z-10 flex items-center justify-between w-full gap-3 h-full">
+          {/* Logo */}
+          <div className="flex items-center flex-shrink-0">
+            <h1 className={`m-0 text-[1.8em] tracking-[2px] whitespace-nowrap font-['Bungee','Black_Ops_One','Audiowide',cursive] font-black animate-[titleGlow_3s_ease-in-out_infinite] ${
+              currentPlayerClass === 'white-turn' 
+                ? 'text-[#8B4513] drop-shadow-[0_0_4px_rgba(139,69,19,0.4),2px_2px_4px_rgba(0,0,0,0.2)]' 
+                : 'bg-gradient-to-br from-[#ffd700] via-[#ff8c00] to-[#ff4500] bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.8),0_0_15px_rgba(255,140,0,0.6),2px_2px_4px_rgba(0,0,0,0.5)]'
+            }`}>
+              🔥 TABLA BAKI
+            </h1>
+          </div>
 
-        <div className="flex items-center w-full px-2.5 gap-5">
-          <div className={`flex items-center gap-2 py-2 px-3 rounded-xl border border-black/10 min-w-[140px] flex-shrink-0 ${currentPlayerClass === 'black-turn' ? 'bg-white/10 border-white/15' : 'bg-black/5'}`}>
-            <div className="flex items-center gap-2 w-full">
-              <div className="text-xl leading-none flex-shrink-0">⚪</div>
-              <div className={`text-xs font-bold tracking-[2px] ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#333]'} font-['Orbitron','Audiowide',sans-serif] uppercase min-w-[50px]`}>WHITE</div>
-              <div className="flex gap-2.5 ml-auto">
-                <div className="flex items-center gap-1">
-                  <span className="text-sm leading-none">🚫</span>
-                  <div className="flex items-center gap-0.5">
-                    {gameState.board.bar_white > 0 ? (
-                      <>
-                        {Array.from({ length: Math.min(gameState.board.bar_white, 3) }).map((_, i) => (
-                          <div key={i} className={`w-3.5 h-3.5 rounded-full border-[1.5px] flex-shrink-0 ${currentPlayerClass === 'black-turn' ? 'bg-gradient-to-br from-white via-[#f0f0f0] to-white border-black/30 shadow-[0_1px_2px_rgba(0,0,0,0.2)]' : 'bg-gradient-to-br from-white via-[#f0f0f0] to-white border-black/30 shadow-[0_1px_2px_rgba(0,0,0,0.2)]'}`}></div>
-                        ))}
-                        {gameState.board.bar_white > 3 && <span className={`text-[11px] font-bold ml-0.5 font-['Orbitron','Audiowide',sans-serif] ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#333]'}`}>{gameState.board.bar_white}</span>}
-                      </>
-                    ) : (
-                      <span className={`text-xs font-semibold italic ${currentPlayerClass === 'black-turn' ? 'text-white/40' : 'text-black/40'}`}>0</span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm leading-none">✅</span>
-                  <div className="flex items-center gap-0.5">
-                    {gameState.board.borne_off_white > 0 ? (
-                      <>
-                        {Array.from({ length: Math.min(gameState.board.borne_off_white, 3) }).map((_, i) => (
-                          <div key={i} className={`w-3.5 h-3.5 rounded-full border-[1.5px] flex-shrink-0 ${currentPlayerClass === 'black-turn' ? 'bg-gradient-to-br from-white via-[#f0f0f0] to-white border-black/30 shadow-[0_1px_2px_rgba(0,0,0,0.2)]' : 'bg-gradient-to-br from-white via-[#f0f0f0] to-white border-black/30 shadow-[0_1px_2px_rgba(0,0,0,0.2)]'}`}></div>
-                        ))}
-                        {gameState.board.borne_off_white > 3 && <span className={`text-[11px] font-bold ml-0.5 font-['Orbitron','Audiowide',sans-serif] ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#333]'}`}>{gameState.board.borne_off_white}</span>}
-                      </>
-                    ) : (
-                      <span className={`text-xs font-semibold italic ${currentPlayerClass === 'black-turn' ? 'text-white/40' : 'text-black/40'}`}>0</span>
-                    )}
-                  </div>
-                </div>
-              </div>
+          {/* White Stats */}
+          <div className={`flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border ${
+            currentPlayerClass === 'black-turn' 
+              ? 'bg-white/10 border-white/20' 
+              : 'bg-[#f0e6d8] border-[#d4c4b0]'
+          }`}>
+            <span className="text-base leading-none">⚪</span>
+            <span className={`text-[10px] font-bold tracking-[1px] uppercase ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#5c4a37]'} font-['Orbitron','Audiowide',sans-serif]`}>W</span>
+            <div className="flex items-center gap-1 ml-1">
+              <span className="text-[10px] leading-none">🚫</span>
+              <span className={`text-[11px] font-bold ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#5c4a37]'}`}>{gameState.board.bar_white}</span>
+            </div>
+            <div className={`w-px h-4 mx-0.5 ${currentPlayerClass === 'black-turn' ? 'bg-gray-400' : 'bg-[#d4c4b0]'}`}></div>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] leading-none">✅</span>
+              <span className={`text-[11px] font-bold ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#5c4a37]'}`}>{gameState.board.borne_off_white}</span>
             </div>
           </div>
 
-          <div className="flex-1 min-w-0"></div>
-
-          <div className={`flex items-center gap-2 py-2 px-3 rounded-xl border border-black/10 min-w-[140px] flex-shrink-0 ml-auto mr-0 ${currentPlayerClass === 'black-turn' ? 'bg-white/10 border-white/15' : 'bg-black/5'}`}>
-            <div className="flex items-center gap-2 w-full">
-              <div className="text-xl leading-none flex-shrink-0">⚫</div>
-              <div className={`text-xs font-bold tracking-[2px] ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#333]'} font-['Orbitron','Audiowide',sans-serif] uppercase min-w-[50px]`}>BLACK</div>
-              <div className="flex gap-2.5 ml-auto">
-                <div className="flex items-center gap-1">
-                  <span className="text-sm leading-none">🚫</span>
-                  <div className="flex items-center gap-0.5">
-                    {gameState.board.bar_black > 0 ? (
-                      <>
-                        {Array.from({ length: Math.min(gameState.board.bar_black, 3) }).map((_, i) => (
-                          <div key={i} className="w-3.5 h-3.5 rounded-full border-[1.5px] flex-shrink-0 bg-gradient-to-br from-[#333] via-black to-[#0a0a0a] border-[#2a2a2a] shadow-[0_1px_2px_rgba(0,0,0,0.2)]"></div>
-                        ))}
-                        {gameState.board.bar_black > 3 && <span className={`text-[11px] font-bold ml-0.5 font-['Orbitron','Audiowide',sans-serif] ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#333]'}`}>{gameState.board.bar_black}</span>}
-                      </>
-                    ) : (
-                      <span className={`text-xs font-semibold italic ${currentPlayerClass === 'black-turn' ? 'text-white/40' : 'text-black/40'}`}>0</span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm leading-none">✅</span>
-                  <div className="flex items-center gap-0.5">
-                    {gameState.board.borne_off_black > 0 ? (
-                      <>
-                        {Array.from({ length: Math.min(gameState.board.borne_off_black, 3) }).map((_, i) => (
-                          <div key={i} className="w-3.5 h-3.5 rounded-full border-[1.5px] flex-shrink-0 bg-gradient-to-br from-[#333] via-black to-[#0a0a0a] border-[#2a2a2a] shadow-[0_1px_2px_rgba(0,0,0,0.2)]"></div>
-                        ))}
-                        {gameState.board.borne_off_black > 3 && <span className={`text-[11px] font-bold ml-0.5 font-['Orbitron','Audiowide',sans-serif] ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#333]'}`}>{gameState.board.borne_off_black}</span>}
-                      </>
-                    ) : (
-                      <span className={`text-xs font-semibold italic ${currentPlayerClass === 'black-turn' ? 'text-white/40' : 'text-black/40'}`}>0</span>
-                    )}
-                  </div>
-                </div>
-              </div>
+          {/* Black Stats */}
+          <div className={`flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border ${
+            currentPlayerClass === 'black-turn' 
+              ? 'bg-white/10 border-white/20' 
+              : 'bg-[#f0e6d8] border-[#d4c4b0]'
+          }`}>
+            <span className="text-base leading-none">⚫</span>
+            <span className={`text-[10px] font-bold tracking-[1px] uppercase ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#5c4a37]'} font-['Orbitron','Audiowide',sans-serif]`}>B</span>
+            <div className="flex items-center gap-1 ml-1">
+              <span className="text-[10px] leading-none">🚫</span>
+              <span className={`text-[11px] font-bold ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#5c4a37]'}`}>{gameState.board.bar_black}</span>
+            </div>
+            <div className={`w-px h-4 mx-0.5 ${currentPlayerClass === 'black-turn' ? 'bg-gray-400' : 'bg-[#d4c4b0]'}`}></div>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] leading-none">✅</span>
+              <span className={`text-[11px] font-bold ${currentPlayerClass === 'black-turn' ? 'text-[#f4f4f4]' : 'text-[#5c4a37]'}`}>{gameState.board.borne_off_black}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
-            {gameMode === 'ai' && isAiThinking && gameState.board.current_player !== humanPlayer && (
-              <div className="flex items-center py-1.5 px-3 bg-[rgba(255,107,107,0.2)] border border-[rgba(255,107,107,0.4)] rounded-full animate-[aiPulse_1.5s_ease-in-out_infinite]">
-                <span className="text-xs font-semibold text-[rgba(255,107,107,0.95)] font-['Orbitron','Audiowide',sans-serif] tracking-[0.5px]">🤖 AI Thinking...</span>
-              </div>
-            )}
-            <span className={`inline-flex items-center py-1.5 px-3 rounded-full border border-black/6 text-[13px] font-bold text-[#333] font-['Cinzel','Uncial_Antiqua',serif] tracking-[1px] capitalize ${currentPlayerClass === 'black-turn' ? 'bg-white/10 border-white/15 text-[#f4f4f4]' : 'bg-black/4'}`}>{gameState.variant}</span>
-            {gameMode === 'ai' && (
-              <span className={`inline-flex items-center justify-center py-1.5 px-2.5 rounded-full border border-white/20 text-base cursor-help transition-all ${currentPlayerClass === 'black-turn' ? 'bg-white/10 border-white/15 hover:bg-white/15 hover:scale-110' : 'bg-black/10 hover:bg-white/15 hover:scale-110'}`} title={`AI Difficulty: ${aiDifficulty}`}>
-                {aiDifficulty === 'easy' ? '😊' : aiDifficulty === 'medium' ? '🎯' : '🔥'}
-              </span>
-            )}
+          {/* AI Thinking Indicator */}
+          {gameMode === 'ai' && isAiThinking && gameState.board.current_player !== humanPlayer && (
+            <div className="flex items-center py-1 px-2.5 bg-[rgba(255,107,107,0.2)] border border-[rgba(255,107,107,0.4)] rounded-full animate-[aiPulse_1.5s_ease-in-out_infinite] flex-shrink-0">
+              <span className="text-[10px] font-semibold text-[rgba(255,107,107,0.95)] font-['Orbitron','Audiowide',sans-serif] tracking-[0.5px]">🤖 AI</span>
+            </div>
+          )}
+
+          {/* Variant Name */}
+          <div className="flex-1 flex items-center justify-center min-w-0">
+            <span className={`inline-flex items-center py-1 px-3 rounded-full border text-xs font-bold font-['Cinzel','Uncial_Antiqua',serif] tracking-[1px] capitalize truncate ${
+              currentPlayerClass === 'black-turn' 
+                ? 'bg-white/10 border-white/15 text-[#f4f4f4]' 
+                : 'bg-[#f0e6d8] border-[#d4c4b0] text-[#5c4a37]'
+            }`}>
+              {gameState.variant}
+            </span>
+          </div>
+
+          {/* AI Difficulty Badge */}
+          {gameMode === 'ai' && (
+            <div className={`flex items-center justify-center w-7 h-7 rounded-full border text-sm cursor-help transition-all flex-shrink-0 ${
+              currentPlayerClass === 'black-turn' 
+                ? 'bg-white/10 border-white/15 hover:bg-white/15 hover:scale-110' 
+                : 'bg-[#f0e6d8] border-[#d4c4b0] hover:bg-[#e8dcc8] hover:scale-110'
+            }`} title={`AI Difficulty: ${aiDifficulty}`}>
+              {aiDifficulty === 'easy' ? '😊' : aiDifficulty === 'medium' ? '🎯' : '🔥'}
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <button
-              className={`w-8 h-8 rounded-full border border-black/10 cursor-pointer flex items-center justify-center text-base p-0 transition-all shadow-[0_2px_4px_rgba(0,0,0,0.1)] hover:bg-white hover:scale-110 hover:shadow-[0_4px_8px_rgba(0,0,0,0.2)] ${currentPlayerClass === 'black-turn' ? 'bg-white/15 border-white/20 hover:bg-white/25' : 'bg-white/90'}`}
+              className={`w-7 h-7 rounded-full border cursor-pointer flex items-center justify-center text-sm p-0 transition-all shadow-[0_2px_4px_rgba(0,0,0,0.1)] hover:scale-110 hover:shadow-[0_4px_8px_rgba(0,0,0,0.2)] ${
+                currentPlayerClass === 'black-turn' 
+                  ? 'bg-white/15 border-white/20 hover:bg-white/25 text-white' 
+                  : 'bg-[#f0e6d8] border-[#d4c4b0] text-[#8B4513] hover:bg-[#e8dcc8]'
+              }`}
               onClick={handleShowVariantRules}
               title="View variant rules"
             >
               ⚠️
             </button>
             <button
-              className={`w-8 h-8 rounded-full border border-black/10 cursor-pointer flex items-center justify-center text-base p-0 transition-all shadow-[0_2px_4px_rgba(0,0,0,0.1)] hover:bg-[rgba(255,107,107,0.9)] hover:scale-110 hover:shadow-[0_4px_8px_rgba(255,107,107,0.3)] ${currentPlayerClass === 'black-turn' ? 'bg-white/15 border-white/20 hover:bg-[rgba(255,107,107,0.3)] hover:border-[rgba(255,107,107,0.4)]' : 'bg-white/90'}`}
+              className={`w-7 h-7 rounded-full border cursor-pointer flex items-center justify-center text-sm p-0 transition-all shadow-[0_2px_4px_rgba(0,0,0,0.1)] hover:scale-110 hover:shadow-[0_4px_8px_rgba(0,0,0,0.2)] ${
+                currentPlayerClass === 'black-turn' 
+                  ? 'bg-white/15 border-white/20 hover:bg-[rgba(255,107,107,0.3)] hover:border-[rgba(255,107,107,0.4)] text-white' 
+                  : 'bg-[#f0e6d8] border-[#d4c4b0] text-[#8B4513] hover:bg-[#d4a574] hover:text-white'
+              }`}
               onClick={handleExitToMenu}
               title="Exit to menu"
             >
@@ -611,6 +617,7 @@ function App() {
               gameState.board.game_over || 
               (gameMode === 'ai' && gameState.board.current_player !== humanPlayer)
             }
+            currentPlayer={gameState.board.current_player}
           />
           
           <div className="w-full max-w-[300px] h-[250px] mx-auto bg-gradient-to-br from-white/10 to-white/5 border-2 border-dashed border-white/30 rounded-xl flex items-center justify-center backdrop-blur-sm relative overflow-hidden before:content-[''] before:absolute before:top-0 before:-left-full before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:animate-[shimmer_3s_infinite]">

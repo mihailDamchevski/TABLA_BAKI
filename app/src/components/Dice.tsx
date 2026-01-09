@@ -4,9 +4,11 @@ interface DiceProps {
   dice: [number, number] | null;
   onRoll: () => void | Promise<void>;
   disabled?: boolean;
+  currentPlayer?: 'white' | 'black' | null;
 }
 
-const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
+const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false, currentPlayer = null }) => {
+  const isWhiteTurn = currentPlayer === 'white';
   const [isRolling, setIsRolling] = useState(false);
   const [displayValues, setDisplayValues] = useState<[number, number] | null>(null);
   const rollRequestedRef = useRef(false);
@@ -92,11 +94,17 @@ const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
     };
     
     const positions = patterns[value] || [];
+    // Light dots for dark background, dark dots for light background
+    const dotColor = isWhiteTurn ? 'bg-[#5c4a37]' : 'bg-white';
+    const dotShadow = isWhiteTurn 
+      ? 'shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]' 
+      : 'shadow-[inset_0_1px_2px_rgba(0,0,0,0.1),0_0_2px_rgba(255,255,255,0.3)]';
+    
     for (let i = 0; i < 9; i++) {
       dots.push(
         <span 
           key={i} 
-          className={`w-3 h-3 rounded-full transition-colors ${positions.includes(i) ? 'bg-gray-800 shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]' : 'bg-transparent'}`}
+          className={`w-3 h-3 rounded-full transition-colors duration-700 ease-in-out ${positions.includes(i) ? `${dotColor} ${dotShadow}` : 'bg-transparent'}`}
         ></span>
       );
     }
@@ -106,10 +114,21 @@ const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
   const die1Value = effectiveDisplayValues ? effectiveDisplayValues[0] : null;
   const die2Value = effectiveDisplayValues ? effectiveDisplayValues[1] : null;
 
+  const diceBg = isWhiteTurn ? 'bg-[#f0e6d8]' : 'bg-[#1a2a1a]';
+  const diceBorder = isWhiteTurn ? 'border-[#d4c4b0]' : 'border-[#0a1a0a]';
+  const diceShadow = isWhiteTurn 
+    ? 'shadow-[0_4px_8px_rgba(0,0,0,0.2)]' 
+    : 'shadow-[0_4px_8px_rgba(0,0,0,0.5)]';
+  const diceHoverShadow = isWhiteTurn
+    ? 'hover:shadow-[0_6px_12px_rgba(0,0,0,0.3)]'
+    : 'hover:shadow-[0_6px_12px_rgba(0,0,0,0.6)]';
+  const questionMarkColor = isWhiteTurn ? 'text-[#8B4513]' : 'text-gray-400';
+  const textColor = isWhiteTurn ? 'text-[#5c4a37]' : 'text-white';
+
   return (
     <div className="flex flex-col items-center gap-5 p-5">
       <div 
-        className={`w-[100px] h-[100px] bg-white border-[3px] border-gray-800 rounded-xl flex items-center justify-center cursor-pointer transition-all shadow-[0_4px_8px_rgba(0,0,0,0.3)] relative ${isRolling ? 'animate-[shake_0.1s_infinite] cursor-wait' : ''} ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${!disabled && !isRolling ? 'hover:scale-110 hover:shadow-[0_6px_12px_rgba(0,0,0,0.4)]' : ''}`}
+        className={`w-[100px] h-[100px] ${diceBg} border-[3px] ${diceBorder} rounded-xl flex items-center justify-center cursor-pointer transition-[background-color,border-color,box-shadow] duration-700 ease-in-out ${diceShadow} relative ${isRolling ? 'animate-[shake_0.1s_infinite] cursor-wait' : ''} ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${!disabled && !isRolling ? `hover:scale-110 ${diceHoverShadow}` : ''}`}
         onClick={handleClick}
       >
         <div className="w-full h-full flex items-center justify-center relative">
@@ -118,13 +137,13 @@ const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
               {renderDots(die1Value)}
             </div>
           ) : (
-            <div className="text-5xl text-gray-400 font-bold">?</div>
+            <div className={`text-5xl ${questionMarkColor} font-bold transition-colors duration-700 ease-in-out`}>?</div>
           )}
         </div>
       </div>
       
       <div 
-        className={`w-[100px] h-[100px] bg-white border-[3px] border-gray-800 rounded-xl flex items-center justify-center cursor-pointer transition-all shadow-[0_4px_8px_rgba(0,0,0,0.3)] relative ${isRolling ? 'animate-[shake_0.1s_infinite] cursor-wait' : ''} ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${!disabled && !isRolling ? 'hover:scale-110 hover:shadow-[0_6px_12px_rgba(0,0,0,0.4)]' : ''}`}
+        className={`w-[100px] h-[100px] ${diceBg} border-[3px] ${diceBorder} rounded-xl flex items-center justify-center cursor-pointer transition-[background-color,border-color,box-shadow] duration-700 ease-in-out ${diceShadow} relative ${isRolling ? 'animate-[shake_0.1s_infinite] cursor-wait' : ''} ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${!disabled && !isRolling ? `hover:scale-110 ${diceHoverShadow}` : ''}`}
         onClick={handleClick}
       >
         <div className="w-full h-full flex items-center justify-center relative">
@@ -133,13 +152,13 @@ const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
               {renderDots(die2Value)}
             </div>
           ) : (
-            <div className="text-5xl text-gray-400 font-bold">?</div>
+            <div className={`text-5xl ${questionMarkColor} font-bold transition-colors duration-700 ease-in-out`}>?</div>
           )}
         </div>
       </div>
       
       {!dice && !disabled && (
-        <div className="text-white text-lg font-bold mt-2.5 drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">Click dice to roll</div>
+        <div className={`${textColor} text-lg font-bold mt-2.5 drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)] transition-colors duration-700 ease-in-out`}>Click dice to roll</div>
       )}
     </div>
   );
