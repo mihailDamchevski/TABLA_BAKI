@@ -22,8 +22,10 @@ TABLA BAKI is a production-ready backgammon game engine that supports multiple v
 
 - **Rule-Driven Engine**: All game logic follows variant-specific rules from JSON configs
 - **15+ Variants**: Support for major backgammon variants (Standard, Plakoto, Fevga, Gioul, etc.)
+- **AI Opponent**: Single-player mode with configurable difficulty levels (Easy, Medium, Hard)
 - **REST API**: FastAPI backend with automatic API documentation
-- **Modern React UI**: TypeScript frontend with animations and responsive design
+- **Modern React UI**: TypeScript frontend with smooth animations and responsive design
+- **Game Modes**: Local multiplayer (2 players) or Single Player vs AI
 - **Extensible**: Easy to add new variants via JSON configs
 
 ## 🏗️ Architecture
@@ -149,6 +151,18 @@ npm run dev
 
 Frontend will be available at http://localhost:3000 (or http://localhost:5173)
 
+### 4. Game Modes
+
+The application supports two game modes:
+
+- **Local (2 Players)**: Two players take turns on the same device
+- **Single Player vs AI**: Play against an AI opponent with three difficulty levels:
+  - **Easy**: Random legal moves
+  - **Medium**: Evaluates moves, sometimes picks from top 3
+  - **Hard**: Always picks the best evaluated move
+
+Select your preferred game mode and player color (White or Black) before starting a new game.
+
 ## 📁 Project Structure
 
 ```
@@ -158,7 +172,8 @@ TABLA_BAKI/
 │   │   ├── engine.py            # Main game logic
 │   │   ├── board.py             # Board representation
 │   │   ├── move.py              # Move types and classes
-│   │   └── player.py            # Player state management
+│   │   ├── player.py            # Player state management
+│   │   └── ai_agent.py          # AI opponent logic
 │   ├── rules/                    # Rule system
 │   │   ├── base.py              # Rule base classes
 │   │   └── parser.py            # Rule parser from JSON
@@ -270,6 +285,54 @@ Content-Type: application/json
 }
 ```
 
+#### 5. AI Move
+
+```http
+POST /games/{game_id}/ai-move?difficulty=easy
+```
+
+**Query Parameters:**
+- `difficulty` (optional): `easy`, `medium`, or `hard` (default: `medium`)
+
+**Response:**
+```json
+{
+  "success": true,
+  "move": {
+    "from_point": 6,
+    "to_point": 3,
+    "move_type": "normal",
+    "die_value": 3
+  },
+  "explanations": ["movement: Move is valid"],
+  "game_state": {...}
+}
+```
+
+#### 6. Set Starting Player
+
+```http
+POST /games/{game_id}/set-player
+Content-Type: application/json
+
+{
+  "player": "white"
+}
+```
+
+**Response:**
+```json
+{
+  "game_state": {...}
+}
+```
+
+#### 7. Delete Game
+
+```http
+DELETE /games/{game_id}
+```
+
 ## 💻 Code Examples
 
 ### Example 1: Creating a Game (Python)
@@ -356,6 +419,13 @@ const moveResult = await api.makeMove(gameState.game_id, {
 if (moveResult.success) {
   console.log('Move successful!');
   console.log('New game state:', moveResult.game_state);
+}
+
+// AI makes a move (single player mode)
+const aiResult = await api.aiMove(gameState.game_id, 'medium');
+if (aiResult.success) {
+  console.log('AI move:', aiResult.move);
+  console.log('New game state:', aiResult.game_state);
 }
 ```
 
@@ -706,12 +776,44 @@ def test_standard_move():
     assert success
 ```
 
+## 🚀 Deployment
+
+### Deploying to Vercel
+
+The project is configured for deployment on Vercel with both frontend and backend:
+
+1. **Install Vercel CLI**:
+   ```bash
+   npm i -g vercel
+   ```
+
+2. **Deploy**:
+   ```bash
+   vercel
+   ```
+
+3. **Environment Variables**:
+   - Set `VITE_API_URL=/api` in Vercel dashboard (for Production, Preview, Development)
+
+4. **Update CORS**: After deployment, update `api/main.py` CORS origins to include your Vercel domain:
+   ```python
+   allow_origins=[
+       "http://localhost:3000",
+       "http://localhost:5173",
+       "https://your-app.vercel.app",
+       "https://*.vercel.app"
+   ]
+   ```
+
+See `vercel.json` in the project root for deployment configuration.
+
 ## 📖 Additional Resources
 
 - **FastAPI Docs**: https://fastapi.tiangolo.com/
 - **React Docs**: https://react.dev/
 - **TypeScript Docs**: https://www.typescriptlang.org/docs/
 - **Backgammon Rules**: https://www.bkgm.com/
+- **Vercel Deployment**: https://vercel.com/docs
 
 ## 📝 License
 
@@ -732,6 +834,24 @@ Proprietary software. All rights reserved.
 
 **Issue**: Moves not validating correctly
 - **Solution**: Check variant JSON config for correct rule definitions
+
+**Issue**: AI not making moves
+- **Solution**: Ensure `/games/{game_id}/ai-move` endpoint is accessible and difficulty parameter is valid
+
+**Issue**: Frontend shows "AI Thinking..." but no move happens
+- **Solution**: Check browser console and Vercel function logs for API errors
+
+---
+
+## 🎮 UI Features
+
+- **Exit Button**: Return to menu anytime with confirmation dialog
+- **Variant Rules Modal**: View rules for each variant before playing
+- **First Player Roll**: Determine starting player with dice roll
+- **Smooth Animations**: Checker movements with CSS animations
+- **Responsive Design**: Works on desktop and mobile devices
+- **AI Thinking Indicator**: Visual feedback when AI is calculating moves
+- **Game Mode Selection**: Choose between local multiplayer or AI opponent
 
 ---
 
