@@ -1,46 +1,13 @@
-// API client for backgammon game
+// API client service
+
+import type {
+  GameState,
+  LegalMove,
+  MoveRequest,
+  PlayerColor,
+} from '../types/game';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-export interface PointData {
-  number: number;
-  white_pieces: number;
-  black_pieces: number;
-}
-
-export interface BoardState {
-  points: PointData[];
-  bar_white: number;
-  bar_black: number;
-  borne_off_white: number;
-  borne_off_black: number;
-  current_player: string | null;
-  dice: [number, number] | null;
-  game_over: boolean;
-  winner: string | null;
-}
-
-export interface LegalMove {
-  move_type: string;
-  from_point: number | null;
-  to_point: number | null;
-  die_value: number;
-}
-
-export interface GameState {
-  game_id: string;
-  variant: string;
-  board: BoardState;
-  legal_moves: LegalMove[];
-  can_roll: boolean;
-}
-
-export interface MoveRequest {
-  from_point?: number | null;
-  to_point?: number | null;
-  move_type: string;
-  die_value?: number | null;
-}
 
 class ApiClient {
   private baseUrl: string;
@@ -119,7 +86,7 @@ class ApiClient {
     return response.json();
   }
 
-  async setStartingPlayer(gameId: string, player: 'white' | 'black'): Promise<GameState> {
+  async setStartingPlayer(gameId: string, player: PlayerColor): Promise<GameState> {
     const response = await fetch(`${this.baseUrl}/games/${gameId}/set-player`, {
       method: 'POST',
       headers: {
@@ -154,4 +121,3 @@ class ApiClient {
 }
 
 export const api = new ApiClient();
-

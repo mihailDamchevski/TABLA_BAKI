@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import type { LegalMove, GameState } from '../api';
-import './GameControls.css';
+import type { LegalMove, GameState } from '../types/game';
 
 interface GameControlsProps {
   gameState: GameState;
@@ -63,54 +62,54 @@ const GameControls: React.FC<GameControlsProps> = ({
   };
 
   return (
-    <div className="game-controls">
-      <div className="controls-section">
-        <h3>Game Info</h3>
-        <div className="info-item">
+    <div className="flex flex-col gap-4 p-5 bg-[#f5f5f5] rounded-lg h-full overflow-y-auto overflow-x-hidden shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
+      <div className="flex flex-col gap-2.5">
+        <h3 className="m-0 pb-2.5 border-b-2 border-gray-300 text-gray-800">Game Info</h3>
+        <div className="p-2 bg-white rounded text-sm">
           <strong>Variant:</strong> {gameState.variant}
         </div>
-        <div className="info-item">
+        <div className="p-2 bg-white rounded text-sm">
           <strong>Current Player:</strong>{' '}
-          <span className={`player ${gameState.board.current_player}`}>
+          <span className={`font-bold ${gameState.board.current_player === 'black' ? 'text-white bg-black px-1.5 py-0.5 rounded' : 'text-black'}`}>
             {gameState.board.current_player || 'None'}
           </span>
         </div>
         {gameState.board.dice && (
-          <div className="info-item dice-display">
+          <div className="p-2 bg-white rounded text-sm flex items-center gap-2.5">
             <strong>Dice:</strong>
-            <div className="dice">
-              <span className="die">{gameState.board.dice[0]}</span>
-              <span className="die">{gameState.board.dice[1]}</span>
+            <div className="flex gap-1.5">
+              <span className="w-10 h-10 bg-white border-2 border-gray-800 rounded-lg flex items-center justify-center text-xl font-bold">{gameState.board.dice[0]}</span>
+              <span className="w-10 h-10 bg-white border-2 border-gray-800 rounded-lg flex items-center justify-center text-xl font-bold">{gameState.board.dice[1]}</span>
             </div>
           </div>
         )}
         {gameState.board.game_over && (
-          <div className="info-item winner">
+          <div className="p-2 bg-green-500 text-white font-bold text-center rounded">
             <strong>Winner: {gameState.board.winner}</strong>
           </div>
         )}
       </div>
 
-      <div className="controls-section">
-        <h3>Actions</h3>
+      <div className="flex flex-col gap-2.5">
+        <h3 className="m-0 pb-2.5 border-b-2 border-gray-300 text-gray-800">Actions</h3>
         {gameState.can_roll && !gameState.board.game_over && (
-          <button className="btn btn-primary" onClick={onRollDice}>
+          <button className="py-2.5 px-5 border-none rounded bg-green-500 text-white text-sm font-bold cursor-pointer transition-all hover:bg-[#45a049]" onClick={onRollDice}>
             Roll Dice
           </button>
         )}
-        <button className="btn btn-secondary" onClick={onNewGame}>
+        <button className="py-2.5 px-5 border-none rounded bg-blue-500 text-white text-sm font-bold cursor-pointer transition-all hover:bg-[#0b7dda]" onClick={onNewGame}>
           New Game
         </button>
       </div>
 
       {gameState.legal_moves.length > 0 && (
-        <div className="controls-section">
-          <h3>Legal Moves ({gameState.legal_moves.length})</h3>
-          <div className="legal-moves-list">
+        <div className="flex flex-col gap-2.5">
+          <h3 className="m-0 pb-2.5 border-b-2 border-gray-300 text-gray-800">Legal Moves ({gameState.legal_moves.length})</h3>
+          <div className="flex flex-col gap-1.5 max-h-[200px] overflow-y-auto">
             {gameState.legal_moves.slice(0, 10).map((move, idx) => (
               <button
                 key={idx}
-                className={`move-btn ${selectedMove === move ? 'selected' : ''}`}
+                className={`p-2 bg-white border border-gray-300 rounded cursor-pointer text-left text-xs transition-all ${selectedMove === move ? 'bg-blue-500 text-white border-blue-700' : 'hover:bg-blue-50 hover:border-blue-500'}`}
                 onClick={() => handleMoveClick(move)}
               >
                 {move.move_type === 'normal' && (
@@ -127,12 +126,12 @@ const GameControls: React.FC<GameControlsProps> = ({
               </button>
             ))}
             {gameState.legal_moves.length > 10 && (
-              <div className="more-moves">... and {gameState.legal_moves.length - 10} more</div>
+              <div className="text-center text-gray-600 text-xs py-1.5">... and {gameState.legal_moves.length - 10} more</div>
             )}
           </div>
           {selectedMove && (
             <button
-              className="btn btn-primary"
+              className="py-2.5 px-5 border-none rounded bg-green-500 text-white text-sm font-bold cursor-pointer transition-all hover:bg-[#45a049]"
               onClick={() => {
                 onMakeMove(selectedMove);
                 setSelectedMove(null);
@@ -144,15 +143,15 @@ const GameControls: React.FC<GameControlsProps> = ({
         </div>
       )}
 
-      <div className="controls-section">
-        <h3>Manual Move</h3>
-        <div className="manual-move">
+      <div className="flex flex-col gap-2.5">
+        <h3 className="m-0 pb-2.5 border-b-2 border-gray-300 text-gray-800">Manual Move</h3>
+        <div className="flex items-center gap-2.5">
           <input
             type="number"
             placeholder="From"
             value={fromPoint}
             onChange={(e) => setFromPoint(e.target.value)}
-            className="move-input"
+            className="flex-1 py-2 px-2 border border-gray-300 rounded text-sm"
           />
           <span>→</span>
           <input
@@ -160,18 +159,18 @@ const GameControls: React.FC<GameControlsProps> = ({
             placeholder="To"
             value={toPoint}
             onChange={(e) => setToPoint(e.target.value)}
-            className="move-input"
+            className="flex-1 py-2 px-2 border border-gray-300 rounded text-sm"
           />
-          <button className="btn btn-primary" onClick={handleManualMove}>
+          <button className="py-2.5 px-5 border-none rounded bg-green-500 text-white text-sm font-bold cursor-pointer transition-all hover:bg-[#45a049]" onClick={handleManualMove}>
             Move
           </button>
         </div>
         {gameState.board.bar_white > 0 || gameState.board.bar_black > 0 ? (
-          <div className="special-moves">
+          <div className="flex gap-1.5 mt-1.5">
             <input
               type="number"
               placeholder="Enter to point"
-              className="move-input"
+              className="flex-1 py-2 px-2 border border-gray-300 rounded text-sm"
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   handleEnterMove((e.target as HTMLInputElement).value);
@@ -179,7 +178,7 @@ const GameControls: React.FC<GameControlsProps> = ({
               }}
             />
             <button
-              className="btn btn-small"
+              className="py-1.25 px-2.5 text-xs py-2.5 px-5 border-none rounded bg-green-500 text-white text-sm font-bold cursor-pointer transition-all hover:bg-[#45a049]"
               onClick={() => {
                 const input = document.querySelector('.special-moves input') as HTMLInputElement;
                 if (input) handleEnterMove(input.value);
@@ -190,11 +189,11 @@ const GameControls: React.FC<GameControlsProps> = ({
           </div>
         ) : null}
         {gameState.board.borne_off_white + gameState.board.borne_off_black < 30 && (
-          <div className="special-moves">
+          <div className="flex gap-1.5 mt-1.5">
             <input
               type="number"
               placeholder="Bear off from"
-              className="move-input"
+              className="flex-1 py-2 px-2 border border-gray-300 rounded text-sm"
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   handleBearOff((e.target as HTMLInputElement).value);
@@ -202,7 +201,7 @@ const GameControls: React.FC<GameControlsProps> = ({
               }}
             />
             <button
-              className="btn btn-small"
+              className="py-1.25 px-2.5 text-xs py-2.5 px-5 border-none rounded bg-green-500 text-white text-sm font-bold cursor-pointer transition-all hover:bg-[#45a049]"
               onClick={() => {
                 const input = document.querySelectorAll('.special-moves input')[1] as HTMLInputElement;
                 if (input) handleBearOff(input.value);
@@ -218,4 +217,3 @@ const GameControls: React.FC<GameControlsProps> = ({
 };
 
 export default GameControls;
-

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './Dice.css';
 
 interface DiceProps {
   dice: [number, number] | null;
@@ -14,16 +13,15 @@ const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
   const minRollEndAtRef = useRef<number>(0);
   const intervalRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
+  const previousDiceRef = useRef<[number, number] | null>(null);
 
+  // Use derived state when not rolling - compute from props directly
+  const effectiveDisplayValues = isRolling ? displayValues : dice;
+
+  // Handle dice prop changes only when we're expecting them (during roll)
   useEffect(() => {
-    // Keep the UI in sync with dice updates WITHOUT automatically triggering animations.
-    if (!isRolling) {
-      setDisplayValues(dice ?? null);
-      return;
-    }
-
-    // If a user initiated a roll and dice arrived, finish the rolling animation.
-    if (rollRequestedRef.current && dice) {
+    // Only sync when we're rolling and dice prop actually changed
+    if (isRolling && rollRequestedRef.current && dice && dice !== previousDiceRef.current) {
       const remaining = Math.max(0, minRollEndAtRef.current - Date.now());
       if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
       timeoutRef.current = window.setTimeout(() => {
@@ -32,11 +30,15 @@ const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
         timeoutRef.current = null;
         rollRequestedRef.current = false;
         setIsRolling(false);
-        setDisplayValues(dice);
+        setDisplayValues(null); // Clear animation state, will use prop directly
       }, remaining);
     }
+    
+    // Track previous dice value
+    previousDiceRef.current = dice;
   }, [dice, isRolling]);
 
+  // Cleanup timers on unmount
   useEffect(() => {
     return () => {
       if (intervalRef.current) window.clearInterval(intervalRef.current);
@@ -67,7 +69,7 @@ const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
         timeoutRef.current = null;
         rollRequestedRef.current = false;
         setIsRolling(false);
-        setDisplayValues(dice ?? null);
+        setDisplayValues(null); // Clear animation state
       }, Math.max(0, minRollEndAtRef.current - Date.now()) + 50);
 
       try {
@@ -94,54 +96,53 @@ const Dice: React.FC<DiceProps> = ({ dice, onRoll, disabled = false }) => {
       dots.push(
         <span 
           key={i} 
-          className={`dot ${positions.includes(i) ? 'visible' : ''}`}
+          className={`w-3 h-3 rounded-full transition-colors ${positions.includes(i) ? 'bg-gray-800 shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]' : 'bg-transparent'}`}
         ></span>
       );
     }
     return dots;
   };
 
-  const die1Value = displayValues ? displayValues[0] : null;
-  const die2Value = displayValues ? displayValues[1] : null;
+  const die1Value = effectiveDisplayValues ? effectiveDisplayValues[0] : null;
+  const die2Value = effectiveDisplayValues ? effectiveDisplayValues[1] : null;
 
   return (
-    <div className="dice-container">
+    <div className="flex flex-col items-center gap-5 p-5">
       <div 
-        className={`die ${isRolling ? 'rolling' : ''} ${disabled ? 'disabled' : ''}`}
+        className={`w-[100px] h-[100px] bg-white border-[3px] border-gray-800 rounded-xl flex items-center justify-center cursor-pointer transition-all shadow-[0_4px_8px_rgba(0,0,0,0.3)] relative ${isRolling ? 'animate-[shake_0.1s_infinite] cursor-wait' : ''} ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${!disabled && !isRolling ? 'hover:scale-110 hover:shadow-[0_6px_12px_rgba(0,0,0,0.4)]' : ''}`}
         onClick={handleClick}
       >
-        <div className="die-face">
+        <div className="w-full h-full flex items-center justify-center relative">
           {die1Value !== null ? (
-            <div className={`dots dots-${die1Value}`}>
+            <div className="grid grid-cols-3 grid-rows-3 w-20 h-20 gap-1 p-2">
               {renderDots(die1Value)}
             </div>
           ) : (
-            <div className="die-placeholder">?</div>
+            <div className="text-5xl text-gray-400 font-bold">?</div>
           )}
         </div>
       </div>
       
       <div 
-        className={`die ${isRolling ? 'rolling' : ''} ${disabled ? 'disabled' : ''}`}
+        className={`w-[100px] h-[100px] bg-white border-[3px] border-gray-800 rounded-xl flex items-center justify-center cursor-pointer transition-all shadow-[0_4px_8px_rgba(0,0,0,0.3)] relative ${isRolling ? 'animate-[shake_0.1s_infinite] cursor-wait' : ''} ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${!disabled && !isRolling ? 'hover:scale-110 hover:shadow-[0_6px_12px_rgba(0,0,0,0.4)]' : ''}`}
         onClick={handleClick}
       >
-        <div className="die-face">
+        <div className="w-full h-full flex items-center justify-center relative">
           {die2Value !== null ? (
-            <div className={`dots dots-${die2Value}`}>
+            <div className="grid grid-cols-3 grid-rows-3 w-20 h-20 gap-1 p-2">
               {renderDots(die2Value)}
             </div>
           ) : (
-            <div className="die-placeholder">?</div>
+            <div className="text-5xl text-gray-400 font-bold">?</div>
           )}
         </div>
       </div>
       
       {!dice && !disabled && (
-        <div className="dice-prompt">Click dice to roll</div>
+        <div className="text-white text-lg font-bold mt-2.5 drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">Click dice to roll</div>
       )}
     </div>
   );
 };
 
 export default Dice;
-

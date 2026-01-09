@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './FirstPlayerRollModal.css';
 
 interface FirstPlayerRollModalProps {
   isOpen: boolean;
@@ -93,7 +92,11 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
       dots.push(
         <span 
           key={i} 
-          className={`dot ${positions.includes(i) ? 'visible' : ''}`}
+          className={`w-[18px] h-[18px] rounded-full bg-black transition-opacity absolute ${positions.includes(i) ? 'opacity-100' : 'opacity-0'}`}
+          style={{
+            gridColumn: `${(i % 3) + 1}`,
+            gridRow: `${Math.floor(i / 3) + 1}`
+          }}
         ></span>
       );
     }
@@ -103,47 +106,47 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
   if (!isOpen) return null;
 
   return (
-    <div className="modal-backdrop">
-      <div className="first-player-roll-modal">
-        <h2>Determining First Player</h2>
-        <p className="modal-subtitle">Rolling dice...</p>
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[10000] backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-[#2c3e50] to-[#34495e] rounded-[20px] p-10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] text-center min-w-[500px] max-w-[600px] animate-[modalSlideIn_0.3s_ease-out]">
+        <h2 className="text-white m-0 mb-2.5 text-[32px] font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">Determining First Player</h2>
+        <p className="text-[#ecf0f1] m-0 mb-7.5 text-lg">Rolling dice...</p>
         
-        <div className="dice-roll-container">
-          <div className="player-roll">
-            <div className="player-label">White</div>
-            <div className={`die-large ${isRolling ? 'rolling' : ''}`}>
-              <div className="die-face">
+        <div className="flex items-center justify-center gap-10 my-7.5">
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-2xl font-bold text-white uppercase font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">White</div>
+            <div className={`w-[120px] h-[120px] bg-white rounded-[15px] flex items-center justify-center shadow-[0_8px_16px_rgba(0,0,0,0.3)] cursor-pointer transition-transform relative ${isRolling ? 'animate-[shake_0.1s_infinite]' : ''}`}>
+              <div className="w-full h-full flex items-center justify-center relative">
                 {whiteDie !== null ? (
-                  <div className={`dots dots-${whiteDie}`}>
+                  <div className="grid grid-cols-3 grid-rows-3 gap-2 p-3 w-full h-full absolute top-0 left-0">
                     {renderDots(whiteDie)}
                   </div>
                 ) : (
-                  <div className="die-placeholder">?</div>
+                  <div className="text-5xl text-[#95a5a6] font-bold flex items-center justify-center w-full h-full absolute top-0 left-0">?</div>
                 )}
               </div>
             </div>
             {whiteDie !== null && !isRolling && (
-              <div className="die-value">{whiteDie}</div>
+              <div className="text-[28px] font-bold text-white font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">{whiteDie}</div>
             )}
           </div>
           
-          <div className="vs-divider">VS</div>
+          <div className="text-[32px] font-bold text-[#f39c12] font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">VS</div>
           
-          <div className="player-roll">
-            <div className="player-label">Black</div>
-            <div className={`die-large ${isRolling ? 'rolling' : ''}`}>
-              <div className="die-face">
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-2xl font-bold text-white uppercase font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">Black</div>
+            <div className={`w-[120px] h-[120px] bg-white rounded-[15px] flex items-center justify-center shadow-[0_8px_16px_rgba(0,0,0,0.3)] cursor-pointer transition-transform relative ${isRolling ? 'animate-[shake_0.1s_infinite]' : ''}`}>
+              <div className="w-full h-full flex items-center justify-center relative">
                 {blackDie !== null ? (
-                  <div className={`dots dots-${blackDie}`}>
+                  <div className="grid grid-cols-3 grid-rows-3 gap-2 p-3 w-full h-full absolute top-0 left-0">
                     {renderDots(blackDie)}
                   </div>
                 ) : (
-                  <div className="die-placeholder">?</div>
+                  <div className="text-5xl text-[#95a5a6] font-bold flex items-center justify-center w-full h-full absolute top-0 left-0">?</div>
                 )}
               </div>
             </div>
             {blackDie !== null && !isRolling && (
-              <div className="die-value">{blackDie}</div>
+              <div className="text-[28px] font-bold text-white font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">{blackDie}</div>
             )}
           </div>
         </div>
@@ -153,4 +156,3 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
 };
 
 export default FirstPlayerRollModal;
-
