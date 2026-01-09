@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import Board from './components/Board';
 import Dice from './components/Dice';
@@ -30,10 +30,104 @@ function App() {
   const [previousBoard, setPreviousBoard] = useState<BoardState | null>(null);
   const [lastMove, setLastMove] = useState<{ from_point: number; to_point: number; move_type: string } | null>(null);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [gameMode, setGameMode] = useState<'local' | 'ai'>('local');
+  const [aiDifficulty, setAiDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [humanPlayer, setHumanPlayer] = useState<'white' | 'black'>('white');
+  const [isAiThinking, setIsAiThinking] = useState(false);
 
   useEffect(() => {
     loadVariants();
   }, []);
+
+  const makeAIMove = useCallback(async () => {
+    if (!gameState) return;
+    
+    setIsAiThinking(true);
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await api.aiMove(gameState.game_id, aiDifficulty);
+      
+      // If AI made a move, set up animation first before updating game state
+      if (result.move) {
+        // Store the previous board state for animation (keep old gameState visible)
+        setPreviousBoard({ ...gameState.board });
+        setLastMove({
+          from_point: result.move.from_point || 0,
+          to_point: result.move.to_point || 0,
+          move_type: result.move.move_type
+        });
+        
+        // Wait for animation to complete (800ms) before updating game state
+        // This ensures the checker animation finishes before showing the new position
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              // Update game state after animation completes - checker will appear in new position
+              setGameState(result.game_state);
+              setSelectedPoint(null);
+              setValidMoves([]);
+              setPreviousBoard(null);
+              setLastMove(null);
+            }, 800);
+          });
+        });
+      } else {
+        // No move made, update state immediately
+        setGameState(result.game_state);
+        setSelectedPoint(null);
+        setValidMoves([]);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'AI move failed');
+    } finally {
+      setLoading(false);
+      setIsAiThinking(false);
+    }
+  }, [gameState, aiDifficulty]);
+
+  // Handle AI turns automatically
+  useEffect(() => {
+    if (
+      !gameState ||
+      gameMode !== 'ai' ||
+      gameState.board.game_over ||
+      loading ||
+      isAiThinking ||
+      showFirstPlayerRoll ||
+      showFirstPlayerResult
+    ) {
+      return;
+    }
+
+    const currentPlayer = gameState.board.current_player;
+    // AI plays when it's NOT the human player's turn
+    const isAiTurn = currentPlayer !== humanPlayer;
+
+    if (isAiTurn) {
+      // AI needs to roll dice
+      if (gameState.can_roll && !gameState.board.dice) {
+        const timer = setTimeout(async () => {
+          try {
+            const result = await api.rollDice(gameState.game_id);
+            setGameState(result.game_state);
+          } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to roll dice for AI');
+          }
+        }, 800);
+        return () => clearTimeout(timer);
+      }
+
+      // AI has dice rolled, make move
+      if (gameState.board.dice && gameState.legal_moves.length > 0) {
+        const timer = setTimeout(() => {
+          makeAIMove();
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [gameState, gameMode, humanPlayer, loading, isAiThinking, showFirstPlayerRoll, showFirstPlayerResult, makeAIMove]);
 
   const loadVariants = async () => {
     try {
@@ -141,6 +235,7 @@ function App() {
     setLastMove(null);
     setError(null);
     setShowExitConfirm(false);
+    setIsAiThinking(false);
   };
 
   const cancelExit = () => {
@@ -330,6 +425,45 @@ function App() {
               label="Select Variant:"
             />
           </div>
+          <div className="game-mode-selector">
+            <CustomDropdown
+              options={[
+                { value: 'local', label: '👥 Local (2 Players)' },
+                { value: 'ai', label: '🤖 Single Player vs AI' }
+              ]}
+              value={gameMode}
+              onChange={(val) => setGameMode(val as 'local' | 'ai')}
+              label="Game Mode:"
+              searchable={false}
+            />
+            
+            {gameMode === 'ai' && (
+              <>
+                <CustomDropdown
+                  options={[
+                    { value: 'easy', label: '😊 Easy' },
+                    { value: 'medium', label: '🎯 Medium' },
+                    { value: 'hard', label: '🔥 Hard' }
+                  ]}
+                  value={aiDifficulty}
+                  onChange={(val) => setAiDifficulty(val as 'easy' | 'medium' | 'hard')}
+                  label="AI Difficulty:"
+                  searchable={false}
+                />
+                
+                <CustomDropdown
+                  options={[
+                    { value: 'white', label: '⚪ White' },
+                    { value: 'black', label: '⚫ Black' }
+                  ]}
+                  value={humanPlayer}
+                  onChange={(val) => setHumanPlayer(val as 'white' | 'black')}
+                  label="You Play As:"
+                  searchable={false}
+                />
+              </>
+            )}
+          </div>
           <button
             className="btn btn-primary"
             onClick={createNewGame}
@@ -432,7 +566,17 @@ function App() {
           </div>
 
           <div className="header-right-controls">
+            {gameMode === 'ai' && isAiThinking && gameState.board.current_player !== humanPlayer && (
+              <div className="ai-thinking-indicator">
+                <span className="ai-thinking-text">🤖 AI Thinking...</span>
+              </div>
+            )}
             <span className="variant-chip">{gameState.variant}</span>
+            {gameMode === 'ai' && (
+              <span className="ai-difficulty-chip" title={`AI Difficulty: ${aiDifficulty}`}>
+                {aiDifficulty === 'easy' ? '😊' : aiDifficulty === 'medium' ? '🎯' : '🔥'}
+              </span>
+            )}
             <button
               className="variant-help-button"
               onClick={handleShowVariantRules}
@@ -469,7 +613,11 @@ function App() {
           <Dice
             dice={gameState.board.dice}
             onRoll={rollDice}
-            disabled={!gameState.can_roll || gameState.board.game_over}
+            disabled={
+              !gameState.can_roll || 
+              gameState.board.game_over || 
+              (gameMode === 'ai' && gameState.board.current_player !== humanPlayer)
+            }
           />
           
           <div className="ad-placeholder">

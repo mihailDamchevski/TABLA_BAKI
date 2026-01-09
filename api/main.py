@@ -1,6 +1,6 @@
 """FastAPI backend for backgammon game engine."""
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Tuple
@@ -9,6 +9,7 @@ from pathlib import Path
 from game.engine import GameEngine
 from game.board import PlayerColor
 from game.move import Move, MoveType
+from game.ai_agent import AIAgent
 from rules import RuleParser
 
 app = FastAPI(title="TABLA BAKI API", version="1.0.0")
@@ -272,6 +273,74 @@ def set_starting_player(game_id: str, player_data: SetPlayerRequest):
         raise HTTPException(status_code=400, detail="Invalid player. Must be 'white' or 'black'")
     
     return {"message": f"Starting player set to {player_str}", "game_state": _get_game_state(game_id)}
+
+
+@app.post("/games/{game_id}/ai-move")
+def ai_make_move(game_id: str, difficulty: str = Query("medium", description="AI difficulty level")):
+    """Make an AI move for the current player."""
+    if game_id not in games:
+        raise HTTPException(status_code=404, detail="Game not found")
+    
+    engine = games[game_id]
+    
+    if engine.game_over:
+        raise HTTPException(status_code=400, detail="Game is over")
+    
+    if engine.current_dice is None:
+        raise HTTPException(status_code=400, detail="Must roll dice first")
+    
+    # Validate difficulty
+    if difficulty not in ["easy", "medium", "hard"]:
+        raise HTTPException(status_code=400, detail="Invalid difficulty. Must be 'easy', 'medium', or 'hard'")
+    
+    # Create AI agent
+    ai = AIAgent(difficulty=difficulty)
+    
+    # Select move
+    move = ai.select_move(engine)
+    
+    if not move:
+        # No legal moves, switch player
+        engine.switch_player()
+        return {
+            "success": False,
+            "message": "No legal moves available",
+            "game_state": _get_game_state(game_id)
+        }
+    
+    # Execute move
+    success, explanations = engine.make_move(move)
+    
+    if not success:
+        raise HTTPException(status_code=400, detail=f"AI move failed: {'; '.join(explanations)}")
+    
+    # Switch player if all dice used
+    if not engine.game_over:
+        if not engine.has_remaining_moves():
+            engine.switch_player()
+        else:
+            remaining_moves = engine.get_legal_moves()
+            if not remaining_moves:
+                engine.switch_player()
+    
+    # Convert move to API format
+    move_type_str = {
+        MoveType.NORMAL: "normal",
+        MoveType.ENTER: "enter",
+        MoveType.BEAR_OFF: "bear_off"
+    }[move.move_type]
+    
+    return {
+        "success": True,
+        "move": {
+            "move_type": move_type_str,
+            "from_point": move.from_point,
+            "to_point": move.to_point,
+            "die_value": move.die_value
+        },
+        "explanations": explanations,
+        "game_state": _get_game_state(game_id)
+    }
 
 
 @app.delete("/games/{game_id}")

@@ -23,6 +23,10 @@ class GameEngine:
         self.used_dice: List[int] = []
         self.game_over = False
         self.winner: Optional[PlayerColor] = None
+        self.total_checkers_per_player: Dict[PlayerColor, int] = {
+            PlayerColor.WHITE: 15,
+            PlayerColor.BLACK: 15
+        }
     
     def start_game(self, initial_setup: Dict[PlayerColor, Dict[int, int]]):
         """Start a new game with initial board setup.
@@ -30,6 +34,12 @@ class GameEngine:
         Args:
             initial_setup: Dict mapping color to dict of {point_number: piece_count}
         """
+        # Calculate total checkers per player from initial setup
+        for color in PlayerColor:
+            total = sum(initial_setup.get(color, {}).values())
+            if total > 0:
+                self.total_checkers_per_player[color] = total
+        
         self.board.setup_initial(initial_setup)
         self.current_player = PlayerColor.WHITE
         self.game_over = False
@@ -313,8 +323,9 @@ class GameEngine:
                     # Single die move (including bear off)
                     self.used_dice.append(move.die_value)
         
-        # Check for win
-        if self.board.borne_off[move.color] >= 15:
+        # Check for win - use variant-specific checker count
+        total_checkers = self.total_checkers_per_player.get(move.color, 15)
+        if self.board.borne_off[move.color] >= total_checkers:
             self.game_over = True
             self.winner = move.color
         

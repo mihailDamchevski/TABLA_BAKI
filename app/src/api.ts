@@ -140,6 +140,17 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  async aiMove(gameId: string, difficulty: string = 'medium'): Promise<{ success: boolean; move?: any; explanations: string[]; game_state: GameState }> {
+    const response = await fetch(`${this.baseUrl}/games/${gameId}/ai-move?difficulty=${difficulty}`, {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'AI move failed');
+    }
+    return response.json();
+  }
 }
 
 export const api = new ApiClient();

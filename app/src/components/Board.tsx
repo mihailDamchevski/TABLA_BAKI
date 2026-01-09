@@ -121,7 +121,12 @@ const Board: React.FC<BoardProps> = ({
   };
 
   const renderPoint = (pointNumber: number, isTop: boolean) => {
-    const point = board.points.find(p => p.number === pointNumber);
+    // During animation, use previousBoard for both from and to points to prevent showing new state
+    const isAnimatingFrom = animatingMove && animatingMove.from === pointNumber;
+    const isAnimatingTo = animatingMove && animatingMove.to === pointNumber;
+    const usePreviousBoard = previousBoard && (isAnimatingFrom || isAnimatingTo);
+    const sourceBoard = usePreviousBoard ? previousBoard : board;
+    const point = sourceBoard.points.find(p => p.number === pointNumber);
     if (!point) return null;
 
     const whitePieces = point.white_pieces;
@@ -144,9 +149,6 @@ const Board: React.FC<BoardProps> = ({
       validMove.move_type === 'normal' &&
       validMove.die_value === board.dice[0] + board.dice[1] &&
       board.dice[0] !== board.dice[1]; // Not doubles
-
-    const isAnimatingFrom = animatingMove && animatingMove.from === pointNumber;
-    const isAnimatingTo = animatingMove && animatingMove.to === pointNumber;
 
     return (
       <div
