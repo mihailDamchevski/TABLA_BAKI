@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: tabla-baki-backend
+    # Expose to host for server nginx to access
+    ports:
+      - "127.0.0.1:4444:4444"
+    volumes:
+      - ./api:/app
+      - /app/__pycache__
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PORT=4444
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://tablabaki.com,https://www.tablabaki.com}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4444/docs')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=/api
+    container_name: tabla-baki-frontend
+    # Expose to host for server nginx to access
+    ports:
+      - "127.0.0.1:6969:6969"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Nginx runs on the server, not in Docker
+# See NGINX_SETUP.md for server nginx configuration
