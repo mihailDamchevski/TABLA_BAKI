@@ -13,4 +13,4 @@ COPY . .
 EXPOSE 4444
 
 # Run the application (PORT env var will be set by docker-compose)
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-4444}
+CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-4444}"
