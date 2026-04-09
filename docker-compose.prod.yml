@@ -1,3 +1,8 @@
+# Production: bind to localhost only. Host nginx proxies:
+#   /     -> 127.0.0.1:6969  (frontend container nginx)
+#   /api/ -> 127.0.0.1:4444/ (FastAPI)
+# Cloudflare Tunnel: ingress service http://localhost:80 → host nginx.
+
 services:
   backend:
     build:
@@ -5,17 +10,18 @@ services:
       dockerfile: Dockerfile
     container_name: tabla-baki-backend
     ports:
-      - "127.0.0.1:8000:4444"
+      - "127.0.0.1:4444:4444"
     environment:
       - PYTHONUNBUFFERED=1
       - PORT=4444
-      - CORS_ORIGINS=https://tablabaki.com,https://www.tablabaki.com
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://tablabaki.com,https://www.tablabaki.com}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4444/docs"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4444/docs')"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 40s
 
   frontend:
     build:
@@ -25,12 +31,13 @@ services:
         - VITE_API_URL=/api
     container_name: tabla-baki-frontend
     ports:
-      - "127.0.0.1:3000:80"
+      - "127.0.0.1:6969:6969"
     depends_on:
       - backend
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:6969/"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 20s
