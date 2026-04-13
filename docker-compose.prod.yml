@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile
     container_name: tabla-baki-backend
     ports:
-      - "127.0.0.1:4444:4444"
+      - "127.0.0.1:8000:4444"
     environment:
       - PYTHONUNBUFFERED=1
       - PORT=4444
@@ -31,7 +31,7 @@ services:
         - VITE_API_URL=/api
     container_name: tabla-baki-frontend
     ports:
-      - "127.0.0.1:6969:6969"
+      - "127.0.0.1:3000:6969"
     depends_on:
       - backend
     restart: unless-stopped
