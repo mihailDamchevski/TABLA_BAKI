@@ -7,116 +7,174 @@ import type {
   PlayerColor,
 } from '../types/game';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_API_URL?.trim();
+const CONFIG_ERROR_MESSAGE = 'Game service is not configured. Please refresh the page or contact support.';
+const SERVER_UNREACHABLE_MESSAGE = 'Server is not responding right now. Please try again in a moment.';
 
 class ApiClient {
-  private baseUrl: string;
+  private baseUrl: string | null;
 
-  constructor(baseUrl: string = API_BASE_URL) {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl: string | undefined = API_BASE_URL) {
+    this.baseUrl = baseUrl && baseUrl.length > 0 ? baseUrl : null;
+  }
+
+  private getBaseUrl(): string {
+    if (!this.baseUrl) {
+      throw new Error(CONFIG_ERROR_MESSAGE);
+    }
+    return this.baseUrl;
+  }
+
+  private async request<T>(endpoint: string, init: RequestInit, fallbackMessage: string): Promise<T> {
+    const baseUrl = this.getBaseUrl();
+
+    try {
+      const response = await fetch(`${baseUrl}${endpoint}`, init);
+
+      if (!response.ok) {
+        let detail: string | null = null;
+        try {
+          const errorData = await response.json();
+          if (typeof errorData?.detail === 'string' && errorData.detail.trim().length > 0) {
+            detail = errorData.detail;
+          }
+        } catch {
+          // No JSON body, fallback to a user-friendly message.
+        }
+        throw new Error(detail || fallbackMessage);
+      }
+
+      if (response.status === 204) {
+        return undefined as T;
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        return undefined as T;
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === CONFIG_ERROR_MESSAGE) {
+          throw error;
+        }
+
+        if (error instanceof TypeError || error.message.includes('Failed to fetch')) {
+          throw new Error(SERVER_UNREACHABLE_MESSAGE);
+        }
+
+        throw error;
+      }
+
+      throw new Error(fallbackMessage);
+    }
   }
 
   async listVariants(): Promise<string[]> {
-    const response = await fetch(`${this.baseUrl}/variants`);
-    const data = await response.json();
+    const data = await this.request<{ variants: string[] }>(
+      '/variants',
+      {},
+      'Could not load game variants. Please try again.'
+    );
     return data.variants;
   }
 
   async getVariantRules(variant: string): Promise<any> {
-    const response = await fetch(`${this.baseUrl}/variants/${variant}`);
-    if (!response.ok) {
-      throw new Error('Failed to get variant rules');
-    }
-    return response.json();
+    return this.request(
+      `/variants/${variant}`,
+      {},
+      'Could not load variant rules. Please try again.'
+    );
   }
 
   async createGame(variant: string = 'standard', gameId?: string): Promise<GameState> {
-    const response = await fetch(`${this.baseUrl}/games`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    return this.request(
+      '/games',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ variant, game_id: gameId }),
       },
-      body: JSON.stringify({ variant, game_id: gameId }),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to create game');
-    }
-    return response.json();
+      'Could not start a new game. Please try again.'
+    );
   }
 
   async getGame(gameId: string): Promise<GameState> {
-    const response = await fetch(`${this.baseUrl}/games/${gameId}`);
-    if (!response.ok) {
-      throw new Error('Failed to get game');
-    }
-    return response.json();
+    return this.request(
+      `/games/${gameId}`,
+      {},
+      'Could not load the game state. Please try again.'
+    );
   }
 
   async rollDice(gameId: string): Promise<{ dice: [number, number]; legal_moves: LegalMove[]; game_state: GameState }> {
-    const response = await fetch(`${this.baseUrl}/games/${gameId}/roll`, {
-      method: 'POST',
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to roll dice');
-    }
-    return response.json();
+    return this.request(
+      `/games/${gameId}/roll`,
+      {
+        method: 'POST',
+      },
+      'Could not roll the dice. Please try again.'
+    );
   }
 
   async makeMove(gameId: string, move: MoveRequest): Promise<{ success: boolean; explanations: string[]; game_state: GameState }> {
-    const response = await fetch(`${this.baseUrl}/games/${gameId}/move`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    return this.request(
+      `/games/${gameId}/move`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(move),
       },
-      body: JSON.stringify(move),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to make move');
-    }
-    return response.json();
+      'Could not make that move. Please try again.'
+    );
   }
 
   async getLegalMoves(gameId: string): Promise<{ legal_moves: LegalMove[]; dice?: [number, number] }> {
-    const response = await fetch(`${this.baseUrl}/games/${gameId}/legal-moves`);
-    if (!response.ok) {
-      throw new Error('Failed to get legal moves');
-    }
-    return response.json();
+    return this.request(
+      `/games/${gameId}/legal-moves`,
+      {},
+      'Could not load legal moves. Please try again.'
+    );
   }
 
   async setStartingPlayer(gameId: string, player: PlayerColor): Promise<GameState> {
-    const response = await fetch(`${this.baseUrl}/games/${gameId}/set-player`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const data = await this.request<{ game_state: GameState }>(
+      `/games/${gameId}/set-player`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ player }),
       },
-      body: JSON.stringify({ player }),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to set starting player');
-    }
-    const data = await response.json();
+      'Could not set the starting player. Please try again.'
+    );
     return data.game_state;
   }
 
   async deleteGame(gameId: string): Promise<void> {
-    await fetch(`${this.baseUrl}/games/${gameId}`, {
-      method: 'DELETE',
-    });
+    await this.request(
+      `/games/${gameId}`,
+      {
+        method: 'DELETE',
+      },
+      'Could not close this game right now.'
+    );
   }
 
   async aiMove(gameId: string, difficulty: string = 'medium'): Promise<{ success: boolean; move?: any; explanations: string[]; game_state: GameState }> {
-    const response = await fetch(`${this.baseUrl}/games/${gameId}/ai-move?difficulty=${difficulty}`, {
-      method: 'POST',
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'AI move failed');
-    }
-    return response.json();
+    return this.request(
+      `/games/${gameId}/ai-move?difficulty=${difficulty}`,
+      {
+        method: 'POST',
+      },
+      'AI move failed. Please try again.'
+    );
   }
 }
 

@@ -48,7 +48,7 @@ function App() {
   const [isAiThinking, setIsAiThinking] = useState(false);
 
   // React Query hooks
-  const { data: variants = [] } = useVariants();
+  const { data: variants = [], error: variantsError } = useVariants();
   const { data: gameState } = useGame(gameId, !!gameId);
   const { data: variantRules } = useVariantRules(
     showVariantRules ? (gameState?.variant || selectedVariant) : null,
@@ -386,6 +386,8 @@ function App() {
 
   const isLoading = createGameMutation.isPending || rollDiceMutation.isPending || makeMoveMutation.isPending || aiMoveMutation.isPending || setStartingPlayerMutation.isPending;
 
+  const displayError = error || (variantsError instanceof Error ? variantsError.message : null);
+
   if (!gameState) {
     return (
       <div className="h-screen w-screen flex flex-col bg-[radial-gradient(circle_at_20%_30%,rgba(0,100,0,0.4)_0%,transparent_50%),radial-gradient(circle_at_80%_70%,rgba(139,69,19,0.3)_0%,transparent_50%),radial-gradient(circle_at_50%_50%,rgba(184,134,11,0.2)_0%,transparent_60%),linear-gradient(135deg,#0a1a0a_0%,#1a2a1a_25%,#0f1419_50%,#1a1a2a_75%,#0a0a1a_100%)] bg-[length:200%_200%,200%_200%,200%_200%,100%_100%] animate-[casinoGlow_20s_ease_infinite] overflow-hidden">
@@ -459,7 +461,7 @@ function App() {
           >
             {isLoading ? 'Loading...' : '🎲 Start New Game 🎲'}
           </button>
-          {error && <div className="bg-[rgba(244,67,54,0.9)] backdrop-blur-[10px] text-white py-2.5 px-[18px] rounded-[10px] mt-2.5 text-center border-2 border-white/30 shadow-[0_4px_15px_rgba(244,67,54,0.4)] animate-[shakeError_0.5s_ease-in-out] text-sm relative z-[1]">{error}</div>}
+          {displayError && <div className="bg-[rgba(244,67,54,0.9)] backdrop-blur-[10px] text-white py-2.5 px-[18px] rounded-[10px] mt-2.5 text-center border-2 border-white/30 shadow-[0_4px_15px_rgba(244,67,54,0.4)] animate-[shakeError_0.5s_ease-in-out] text-sm relative z-[1]">{displayError}</div>}
         </div>
       </div>
     );
@@ -594,7 +596,7 @@ function App() {
         </div>
       </header>
       
-      {error && <div className="bg-[#f44336] text-white py-4 text-center font-bold">{error}</div>}
+      {displayError && <div className="bg-[#f44336] text-white py-4 text-center font-bold">{displayError}</div>}
       
       <div className="flex gap-5 p-2.5 flex-1 min-h-0 items-stretch justify-center overflow-hidden">
         <div className="flex-1 flex items-stretch justify-center min-w-0 overflow-hidden h-full min-h-0">
