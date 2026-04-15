@@ -412,7 +412,7 @@ function App() {
 
   if (!gameState) {
     return (
-      <div className="h-screen w-screen flex flex-col bg-[radial-gradient(circle_at_20%_30%,rgba(0,100,0,0.4)_0%,transparent_50%),radial-gradient(circle_at_80%_70%,rgba(139,69,19,0.3)_0%,transparent_50%),radial-gradient(circle_at_50%_50%,rgba(184,134,11,0.2)_0%,transparent_60%),linear-gradient(135deg,#0a1a0a_0%,#1a2a1a_25%,#0f1419_50%,#1a1a2a_75%,#0a0a1a_100%)] bg-[length:200%_200%,200%_200%,200%_200%,100%_100%] animate-[casinoGlow_20s_ease_infinite] overflow-hidden">
+      <div className="h-dvh w-screen flex flex-col bg-[radial-gradient(circle_at_20%_30%,rgba(0,100,0,0.4)_0%,transparent_50%),radial-gradient(circle_at_80%_70%,rgba(139,69,19,0.3)_0%,transparent_50%),radial-gradient(circle_at_50%_50%,rgba(184,134,11,0.2)_0%,transparent_60%),linear-gradient(135deg,#0a1a0a_0%,#1a2a1a_25%,#0f1419_50%,#1a1a2a_75%,#0a0a1a_100%)] bg-[length:200%_200%,200%_200%,200%_200%,100%_100%] animate-[casinoGlow_20s_ease_infinite] overflow-hidden">
         <div className="flex flex-col items-center justify-center h-full w-full gap-2 mid:gap-3 desktop:gap-3 big:gap-4 p-3 mid:p-4 desktop:p-4 overflow-hidden relative bg-[radial-gradient(circle_at_20%_30%,rgba(0,100,0,0.4)_0%,transparent_50%),radial-gradient(circle_at_80%_70%,rgba(139,69,19,0.3)_0%,transparent_50%),radial-gradient(circle_at_50%_50%,rgba(184,134,11,0.2)_0%,transparent_60%),linear-gradient(135deg,#0a1a0a_0%,#1a2a1a_25%,#0f1419_50%,#1a1a2a_75%,#0a0a1a_100%)] bg-[length:200%_200%,200%_200%,200%_200%,100%_100%] animate-[casinoGlow_20s_ease_infinite] before:content-[''] before:absolute before:rounded-full before:blur-[80px] before:opacity-60 before:animate-[blobFloat_20s_ease-in-out_infinite] before:w-[500px] before:h-[500px] before:bg-[rgba(255,107,107,0.5)] before:-top-[200px] before:-left-[200px] after:content-[''] after:absolute after:rounded-full after:blur-[80px] after:opacity-60 after:animate-[blobFloat_20s_ease-in-out_infinite] after:delay-[-10s] after:w-[600px] after:h-[600px] after:bg-[rgba(107,255,255,0.5)] after:-bottom-[300px] after:-right-[300px]">
           {/* Floating particles */}
           <div className="absolute inset-0 overflow-hidden z-0">
@@ -510,7 +510,7 @@ function App() {
 
   return (
     <div
-      className={`relative h-screen w-screen flex flex-col bg-[radial-gradient(circle_at_20%_30%,rgba(0,100,0,0.4)_0%,transparent_50%),radial-gradient(circle_at_80%_70%,rgba(139,69,19,0.3)_0%,transparent_50%),radial-gradient(circle_at_50%_50%,rgba(184,134,11,0.2)_0%,transparent_60%),linear-gradient(135deg,#0a1a0a_0%,#1a2a1a_25%,#0f1419_50%,#1a1a2a_75%,#0a0a1a_100%)] bg-[length:200%_200%,200%_200%,100%_100%] animate-[casinoGlow_20s_ease_infinite] overflow-hidden ${isExecutingMove ? "cursor-wait" : ""}`}
+      className={`relative h-dvh w-screen flex flex-col bg-[radial-gradient(circle_at_20%_30%,rgba(0,100,0,0.4)_0%,transparent_50%),radial-gradient(circle_at_80%_70%,rgba(139,69,19,0.3)_0%,transparent_50%),radial-gradient(circle_at_50%_50%,rgba(184,134,11,0.2)_0%,transparent_60%),linear-gradient(135deg,#0a1a0a_0%,#1a2a1a_25%,#0f1419_50%,#1a1a2a_75%,#0a0a1a_100%)] bg-[length:200%_200%,200%_200%,100%_100%] animate-[casinoGlow_20s_ease_infinite] overflow-hidden ${isExecutingMove ? "cursor-wait" : ""}`}
     >
       {/* Portrait overlay: shown only on narrow portrait screens */}
       <div className="portrait-small:flex hidden fixed inset-0 z-[9999] bg-gradient-to-br from-[#0a1a0a] via-[#1a2a1a] to-[#0a0a1a] flex-col items-center justify-center gap-6 p-8 text-center">

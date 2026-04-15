@@ -9,7 +9,9 @@
 
   html,
   body {
-    @apply m-0 p-0 h-full w-full overflow-hidden;
+    @apply m-0 p-0 w-full overflow-hidden;
+    height: 100vh;
+    height: 100dvh;
   }
 
   body {
@@ -20,7 +22,9 @@
   }
 
   #root {
-    @apply h-full w-full overflow-hidden;
+    @apply w-full overflow-hidden;
+    height: 100vh;
+    height: 100dvh;
   }
 }
 
