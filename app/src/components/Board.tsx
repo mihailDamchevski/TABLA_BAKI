@@ -205,9 +205,6 @@ const Board: React.FC<BoardProps> = ({
       validMove.die_value === board.dice[0] + board.dice[1] &&
       board.dice[0] !== board.dice[1]; // Not doubles
 
-    // Check if Doubles are rolled
-    const hasDoubles = board.dice && board.dice[0] === board.dice[1];
-
     const pointClasses = `flex-1 flex flex-col cursor-pointer transition-all relative min-w-[40px] overflow-visible z-10 ${isTop ? "flex-col-reverse" : ""}`;
     const triangleClasses = `absolute inset-0 ${isTop ? "[clip-path:polygon(50%_100%,0%_0%,100%_0%)]" : "[clip-path:polygon(50%_0%,0%_100%,100%_100%)]"} border-l-2 border-r-2 border-b border-[rgba(139,69,19,0.4)] z-[1] pointer-events-none transition-all ${
       isSelected
