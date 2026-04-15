@@ -6,6 +6,7 @@ import type {
   MoveRequest,
   PlayerColor,
 } from "../types/game";
+import type { VariantRules } from "../types/variant";
 
 const API_BASE_URL = (
   import.meta as { env?: Record<string, string | undefined> }
@@ -94,7 +95,7 @@ class ApiClient {
     return data.variants;
   }
 
-  async getVariantRules(variant: string): Promise<any> {
+  async getVariantRules(variant: string): Promise<VariantRules> {
     return this.request(
       `/variants/${variant}`,
       {},
@@ -208,7 +209,8 @@ class ApiClient {
     difficulty: string = "medium",
   ): Promise<{
     success: boolean;
-    move?: any;
+    move?: LegalMove;
+    message?: string;
     explanations: string[];
     game_state: GameState;
   }> {

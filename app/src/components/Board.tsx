@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import type { BoardState, LegalMove } from "../types/game";
 
 interface BoardProps {
@@ -22,39 +22,32 @@ const Board: React.FC<BoardProps> = ({
 }) => {
   const MAX_VISIBLE_PIECES = 5;
   const boardRef = useRef<HTMLDivElement>(null);
-  const movingCheckerRef = useRef<HTMLDivElement>(null);
-  const [animatingMove, setAnimatingMove] = useState<{
-    from: number;
-    to: number;
-    color: "white" | "black";
-  } | null>(null);
+  const animatingMove =
+    lastMove && previousBoard
+      ? (() => {
+          const fromPoint = previousBoard.points.find(
+            (p) => p.number === lastMove.from_point,
+          );
+          const toPoint = board.points.find((p) => p.number === lastMove.to_point);
+
+          if (!fromPoint || !toPoint) {
+            return null;
+          }
+
+          return {
+            from: lastMove.from_point,
+            to: lastMove.to_point,
+            color: (fromPoint.white_pieces > 0 ? "white" : "black") as
+              | "white"
+              | "black",
+          };
+        })()
+      : null;
 
   useEffect(() => {
-    if (lastMove && previousBoard && boardRef.current) {
-      const fromPoint = previousBoard.points.find(
-        (p) => p.number === lastMove.from_point,
-      );
-      const toPoint = board.points.find((p) => p.number === lastMove.to_point);
-
-      if (fromPoint && toPoint) {
-        const color = fromPoint.white_pieces > 0 ? "white" : "black";
-        setAnimatingMove({
-          from: lastMove.from_point,
-          to: lastMove.to_point,
-          color,
-        });
-
-        const timer = setTimeout(() => {
-          setAnimatingMove(null);
-        }, 800);
-
-        return () => clearTimeout(timer);
-      }
+    if (!animatingMove || !boardRef.current) {
+      return;
     }
-  }, [lastMove, previousBoard]);
-
-  const renderMovingChecker = () => {
-    if (!animatingMove || !boardRef.current) return null;
 
     const fromPointEl = boardRef.current.querySelector(
       `[data-point="${animatingMove.from}"]`,
@@ -63,7 +56,9 @@ const Board: React.FC<BoardProps> = ({
       `[data-point="${animatingMove.to}"]`,
     );
 
-    if (!fromPointEl || !toPointEl) return null;
+    if (!fromPointEl || !toPointEl) {
+      return;
+    }
 
     const fromRect = fromPointEl.getBoundingClientRect();
     const toRect = toPointEl.getBoundingClientRect();
@@ -75,34 +70,15 @@ const Board: React.FC<BoardProps> = ({
     const isTopTriangle = toPointEl.classList.contains("top");
     const toX = toRect.left + toRect.width / 2 - boardRect.left;
 
-    let toY: number;
-    if (isTopTriangle) {
-      toY = toRect.top + toRect.height * 0.15 - boardRect.top;
-    } else {
-      toY = toRect.top + toRect.height * 0.85 - boardRect.top;
-    }
+    const toY = isTopTriangle
+      ? toRect.top + toRect.height * 0.15 - boardRect.top
+      : toRect.top + toRect.height * 0.85 - boardRect.top;
 
-    return (
-      <div
-        ref={movingCheckerRef}
-        className={`absolute w-[50px] h-[50px] rounded-full z-[10000] pointer-events-none ${animatingMove.color === "white" ? "bg-gradient-to-br from-white via-[#F5F5F5] to-[#E8E8E8] border-[3px] border-[#D0D0D0] shadow-[0_4px_8px_rgba(0,0,0,0.25),0_2px_4px_rgba(0,0,0,0.15),inset_0_2px_4px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(0,0,0,0.1)]" : "bg-gradient-to-br from-[#1a1a1a] via-black to-[#0a0a0a] border-[3px] border-[#2a2a2a] shadow-[0_4px_8px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15),inset_0_-2px_4px_rgba(0,0,0,0.5)]"}`}
-        style={
-          {
-            left: "var(--from-x)",
-            top: "var(--from-y)",
-            transform: "translate(-50%, -50%)",
-            willChange: "transform",
-            animation:
-              "checker-slide 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards",
-            "--from-x": `${fromX}px`,
-            "--from-y": `${fromY}px`,
-            "--to-x": `${toX}px`,
-            "--to-y": `${toY}px`,
-          } as React.CSSProperties
-        }
-      />
-    );
-  };
+    boardRef.current.style.setProperty("--moving-from-x", `${fromX}px`);
+    boardRef.current.style.setProperty("--moving-from-y", `${fromY}px`);
+    boardRef.current.style.setProperty("--moving-to-x", `${toX}px`);
+    boardRef.current.style.setProperty("--moving-to-y", `${toY}px`);
+  }, [animatingMove, board.points]);
 
   const renderBorneOffArea = (
     color: "white" | "black",
@@ -164,14 +140,6 @@ const Board: React.FC<BoardProps> = ({
     const blackPieces = point.black_pieces;
     const isSelected = selectedPoint === pointNumber;
 
-    // Get the count of available moves from this point (helps show doubles moves)
-    const availableMovesFromThisPoint = validMoves.filter((m) => {
-      if (selectedPoint === 0) {
-        return m.move_type === "enter" && m.to_point === pointNumber;
-      }
-      return m.from_point === pointNumber;
-    }).length;
-
     // Check if this point is a valid destination
     const validMove = validMoves.find((m) => {
       if (selectedPoint === 0) {
@@ -180,13 +148,6 @@ const Board: React.FC<BoardProps> = ({
       return m.to_point === pointNumber && m.from_point === selectedPoint;
     });
     const isValidDestination = !!validMove;
-
-    // When doubles are rolled and no point is selected, highlight ALL valid destinations
-    const isValidDoubleDestination =
-      selectedPoint === null &&
-      board.dice &&
-      board.dice[0] === board.dice[1] &&
-      validMoves.some((m) => m.to_point === pointNumber);
 
     // When doubles are rolled and a point IS selected, this is a valid destination using the double
     const isDoubleDestinationSelected =
@@ -209,7 +170,7 @@ const Board: React.FC<BoardProps> = ({
     const triangleClasses = `absolute inset-0 ${isTop ? "[clip-path:polygon(50%_100%,0%_0%,100%_0%)]" : "[clip-path:polygon(50%_0%,0%_100%,100%_100%)]"} border-l-2 border-r-2 border-b border-[rgba(139,69,19,0.4)] z-[1] pointer-events-none transition-all ${
       isSelected
         ? "bg-gradient-to-br from-[#FFD700] via-[#FFC125] to-[#FF8C00] border-[3px] border-[#FF8C00] shadow-[0_0_20px_rgba(255,215,0,0.7),0_0_40px_rgba(255,140,0,0.4),inset_0_2px_6px_rgba(255,255,255,0.5),inset_0_-2px_6px_rgba(0,0,0,0.2)] animate-[selected-pulse_2s_ease-in-out_infinite]"
-        : isDoubleDestinationSelected || isValidDoubleDestination
+        : isDoubleDestinationSelected
           ? "bg-gradient-to-br from-[#FF6B9D] via-[#FF1493] to-[#FF1493] border-[3px] border-[#FF1493] shadow-[0_0_25px_rgba(255,20,147,0.8),0_0_50px_rgba(255,105,180,0.5),inset_0_2px_6px_rgba(255,255,255,0.3),inset_0_-2px_6px_rgba(0,0,0,0.2)] animate-[pulse-valid-doubles_1s_ease-in-out_infinite]"
           : isValidDestination
             ? isCombinedMove
@@ -284,25 +245,6 @@ const Board: React.FC<BoardProps> = ({
               })}
             </div>
           )}
-          {isSelected && availableMovesFromThisPoint > 1 && (
-            <div
-              className="bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold border-2 border-purple-300 shadow-[0_0_12px_rgba(168,85,247,0.8)]" 
-              style={{
-                width: '24px',
-                height: '24px',
-                fontSize: '11px',
-                position: 'absolute',
-                bottom: isTop ? 'auto' : '-30px',
-                top: isTop ? '-30px' : 'auto',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: 500,
-              }}
-              title={`${availableMovesFromThisPoint} moves available (doubles can have multiple moves)`}
-            >
-              {availableMovesFromThisPoint}
-            </div>
-          )}
         </div>
       </div>
     );
@@ -311,10 +253,28 @@ const Board: React.FC<BoardProps> = ({
   return (
     <div className="flex flex-col items-center p-2.5 w-full h-full justify-start overflow-hidden z-[1] relative">
       <div
-        className="flex flex-col bg-[linear-gradient(135deg,#6B4423_0%,#8B5A3C_25%,#A67C52_50%,#8B5A3C_75%,#6B4423_100%),radial-gradient(circle_at_20%_50%,rgba(139,90,60,0.3)_0%,transparent_50%),radial-gradient(circle_at_80%_50%,rgba(107,68,35,0.3)_0%,transparent_50%)] bg-[length:100%_100%,100%_100%,100%_100%] border-[6px] border-[#4A2C1A] border-l-[12px] border-r-[12px] border-[#3D2416] rounded-2xl p-3 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_2px_8px_rgba(255,255,255,0.1),inset_0_-2px_8px_rgba(0,0,0,0.3)] w-full h-full max-h-full flex-1 min-h-0 mx-auto z-0 relative before:content-[''] before:absolute before:inset-0 before:bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,rgba(0,0,0,0.03)_2px,rgba(0,0,0,0.03)_4px)] before:rounded-2xl before:pointer-events-none before:z-[1]"
+        className="flex flex-col bg-[linear-gradient(135deg,#6B4423_0%,#8B5A3C_25%,#A67C52_50%,#8B5A3C_75%,#6B4423_100%),radial-gradient(circle_at_20%_50%,rgba(139,90,60,0.3)_0%,transparent_50%),radial-gradient(circle_at_80%_50%,rgba(107,68,35,0.3)_0%,transparent_50%)] bg-[length:100%_100%,100%_100%,100%_100%] border-[6px] border-[#4A2C1A] border-l-[12px] border-r-[12px] border-l-[#3D2416] border-r-[#3D2416] rounded-2xl p-3 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_2px_8px_rgba(255,255,255,0.1),inset_0_-2px_8px_rgba(0,0,0,0.3)] w-full h-full max-h-full flex-1 min-h-0 mx-auto z-0 relative before:content-[''] before:absolute before:inset-0 before:bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,rgba(0,0,0,0.03)_2px,rgba(0,0,0,0.03)_4px)] before:rounded-2xl before:pointer-events-none before:z-[1]"
         ref={boardRef}
       >
-        {renderMovingChecker()}
+        {animatingMove && (
+          <div
+            className={`absolute w-[50px] h-[50px] rounded-full z-[10000] pointer-events-none ${animatingMove.color === "white" ? "bg-gradient-to-br from-white via-[#F5F5F5] to-[#E8E8E8] border-[3px] border-[#D0D0D0] shadow-[0_4px_8px_rgba(0,0,0,0.25),0_2px_4px_rgba(0,0,0,0.15),inset_0_2px_4px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(0,0,0,0.1)]" : "bg-gradient-to-br from-[#1a1a1a] via-black to-[#0a0a0a] border-[3px] border-[#2a2a2a] shadow-[0_4px_8px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15),inset_0_-2px_4px_rgba(0,0,0,0.5)]"}`}
+            style={
+              {
+                left: "var(--moving-from-x)",
+                top: "var(--moving-from-y)",
+                transform: "translate(-50%, -50%)",
+                willChange: "transform",
+                animation:
+                  "checker-slide 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+                "--from-x": "var(--moving-from-x)",
+                "--from-y": "var(--moving-from-y)",
+                "--to-x": "var(--moving-to-x)",
+                "--to-y": "var(--moving-to-y)",
+              } as React.CSSProperties
+            }
+          />
+        )}
         <div className="flex flex-row h-full w-full gap-0 items-stretch relative z-[2]">
           {renderBorneOffArea("white", "left")}
           <div className="flex flex-row h-full gap-0.5 z-0 relative flex-1">
@@ -375,12 +335,12 @@ const Board: React.FC<BoardProps> = ({
                 </div>
                 <div className="flex flex-col gap-2.5 items-center w-full">
                   {board.bar_white > 0 && (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs border-[2.5px] z-[100] relative transition-all shadow-[0_2px_6px_rgba(0,0,0,0.4)] hover:scale-110 bg-gradient-to-br from-white via-[#F5F5F5] to-[#E8E8E8] text-black border-[#D0D0D0] shadow-[0_3px_6px_rgba(0,0,0,0.3),inset_0_1px_3px_rgba(255,255,255,0.9),inset_0_-1px_3px_rgba(0,0,0,0.1)]">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs border-[2.5px] z-[100] relative transition-all hover:scale-110 bg-gradient-to-br from-white via-[#F5F5F5] to-[#E8E8E8] text-black border-[#D0D0D0] shadow-[0_3px_6px_rgba(0,0,0,0.3),inset_0_1px_3px_rgba(255,255,255,0.9),inset_0_-1px_3px_rgba(0,0,0,0.1)]">
                       {board.bar_white}
                     </div>
                   )}
                   {board.bar_black > 0 && (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs border-[2.5px] z-[100] relative transition-all shadow-[0_2px_6px_rgba(0,0,0,0.4)] hover:scale-110 bg-gradient-to-br from-[#1a1a1a] via-black to-[#0a0a0a] text-white border-[#2a2a2a] shadow-[0_3px_6px_rgba(0,0,0,0.5),inset_0_1px_3px_rgba(255,255,255,0.15),inset_0_-1px_3px_rgba(0,0,0,0.5)]">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs border-[2.5px] z-[100] relative transition-all hover:scale-110 bg-gradient-to-br from-[#1a1a1a] via-black to-[#0a0a0a] text-white border-[#2a2a2a] shadow-[0_3px_6px_rgba(0,0,0,0.5),inset_0_1px_3px_rgba(255,255,255,0.15),inset_0_-1px_3px_rgba(0,0,0,0.5)]">
                       {board.bar_black}
                     </div>
                   )}

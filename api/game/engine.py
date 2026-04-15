@@ -126,6 +126,32 @@ class GameEngine:
                         )
                         if self._is_legal_move(move, dice):
                             moves.append(move)
+
+                # For doubles, also generate cumulative moves for the same checker
+                # (e.g. 3, 6, 9, 12 with 3-3 and 4 uses available), only when each
+                # intermediate step is legal on a simulated board.
+                if self.is_doubles() and available_dice:
+                    base_die = available_dice[0]
+                    max_steps = len(available_dice)
+                    for steps in range(2, max_steps + 1):
+                        target = self._simulate_cumulative_normal_target(
+                            board=self.board.copy(),
+                            color=self.current_player,
+                            from_point=point_num,
+                            base_die=base_die,
+                            steps=steps,
+                            dice=dice,
+                        )
+                        if target is not None:
+                            moves.append(
+                                Move(
+                                    color=self.current_player,
+                                    move_type=MoveType.NORMAL,
+                                    from_point=point_num,
+                                    to_point=target,
+                                    die_value=base_die * steps,
+                                )
+                            )
                 
                 # Also generate moves using sum of both dice (only for non-doubles and allowed by rules)
                 if (
@@ -250,6 +276,74 @@ class GameEngine:
                 self.board.add_to_bar(opponent, 1)
             elif self.rules.pin_instead():
                 pass
+
+    def _handle_opponent_interaction_on_board(self, board: Board, target_point, opponent: PlayerColor):
+        """Handle hitting/pinning on a provided board instance."""
+        if target_point.is_blot(opponent):
+            if self.rules.can_hit():
+                target_point.remove_piece(opponent, 1)
+                board.add_to_bar(opponent, 1)
+            elif self.rules.pin_instead():
+                pass
+
+    def _apply_single_normal_step_on_board(
+        self,
+        board: Board,
+        color: PlayerColor,
+        from_point: int,
+        die_value: int,
+        dice: Tuple[int, int],
+    ) -> Optional[int]:
+        """Apply one normal step on a given board. Returns target if applied."""
+        target = self._calculate_target(color, from_point, die_value)
+        if target is None:
+            return None
+
+        move = Move(
+            color=color,
+            move_type=MoveType.NORMAL,
+            from_point=from_point,
+            to_point=target,
+            die_value=die_value,
+        )
+        valid, _ = self.rules.validate_move(board, color, move, dice)
+        if not valid:
+            return None
+
+        from_pt = board.get_point(from_point)
+        if from_pt is None or from_pt.get_pieces(color) <= 0:
+            return None
+
+        from_pt.remove_piece(color, 1)
+        target_point = board.get_point(target)
+        opponent = color.opposite()
+        self._handle_opponent_interaction_on_board(board, target_point, opponent)
+        target_point.add_piece(color, 1)
+        return target
+
+    def _simulate_cumulative_normal_target(
+        self,
+        board: Board,
+        color: PlayerColor,
+        from_point: int,
+        base_die: int,
+        steps: int,
+        dice: Tuple[int, int],
+    ) -> Optional[int]:
+        """Simulate cumulative doubles movement and return final target if legal."""
+        current = from_point
+        for _ in range(steps):
+            next_point = self._apply_single_normal_step_on_board(
+                board=board,
+                color=color,
+                from_point=current,
+                die_value=base_die,
+                dice=dice,
+            )
+            if next_point is None:
+                return None
+            current = next_point
+        return current
     
     def _is_legal_move(self, move: Move, dice: Tuple[int, int]) -> bool:
         """Check if a move is legal according to variant rules."""
@@ -291,6 +385,42 @@ class GameEngine:
             return False, explanations
         
         # Execute move
+        if (
+            move.move_type == MoveType.NORMAL
+            and self.is_doubles()
+            and self.current_dice
+            and move.die_value > self.current_dice[0]
+        ):
+            base_die = self.current_dice[0]
+            if move.die_value % base_die != 0:
+                return False, ["Invalid cumulative doubles move distance"]
+
+            steps = move.die_value // base_die
+            remaining_steps = len(self.get_available_dice_list())
+            if steps > remaining_steps:
+                return False, ["Not enough doubles uses remaining for this move"]
+
+            final_target = self._simulate_cumulative_normal_target(
+                board=self.board,
+                color=move.color,
+                from_point=move.from_point,
+                base_die=base_die,
+                steps=steps,
+                dice=self.current_dice,
+            )
+            if final_target is None or final_target != move.to_point:
+                return False, ["Cumulative doubles path is blocked or invalid"]
+
+            self.used_dice.extend([base_die] * steps)
+
+            # Check for win - use variant-specific checker count
+            total_checkers = self.total_checkers_per_player.get(move.color, 15)
+            if self.board.borne_off[move.color] >= total_checkers:
+                self.game_over = True
+                self.winner = move.color
+
+            return True, explanations
+
         if move.move_type == MoveType.ENTER:
             self.board.remove_from_bar(move.color, 1)
             target_point = self.board.get_point(move.to_point)

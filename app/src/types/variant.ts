@@ -35,5 +35,5 @@ export interface VariantRules {
     must_use_higher_if_only_one?: boolean;
     description?: string;
   };
-  [key: string]: any;
+  [key: string]: unknown;
 }

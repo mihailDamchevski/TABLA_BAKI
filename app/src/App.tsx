@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import Board from "./components/Board";
 import Dice from "./components/Dice";
 import FirstPlayerRollModal from "./components/FirstPlayerRollModal";
-import FirstPlayerResultModal from "./components/FirstPlayerResultModal";
 import VariantRulesModal from "./components/VariantRulesModal";
 import ExitConfirmModal from "./components/ExitConfirmModal";
 import CustomDropdown from "./components/CustomDropdown";
@@ -32,10 +31,6 @@ function App() {
   // Note: we use `0` as a sentinel for selecting the Bar (points are 1-24).
   const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
   const [showFirstPlayerRoll, setShowFirstPlayerRoll] = useState(false);
-  const [showFirstPlayerResult, setShowFirstPlayerResult] = useState(false);
-  const [firstPlayer, setFirstPlayer] = useState<"white" | "black" | null>(
-    null,
-  );
   const [validMoves, setValidMoves] = useState<LegalMove[]>([]);
   const [showVariantRules, setShowVariantRules] = useState(false);
   const [firstPlayerRollDone, setFirstPlayerRollDone] = useState(false);
@@ -123,8 +118,7 @@ function App() {
       makeMoveMutation.isPending ||
       aiMoveMutation.isPending ||
       isAiThinking ||
-      showFirstPlayerRoll ||
-      showFirstPlayerResult
+      showFirstPlayerRoll
     ) {
       return;
     }
@@ -167,8 +161,8 @@ function App() {
     aiMoveMutation.isPending,
     isAiThinking,
     showFirstPlayerRoll,
-    showFirstPlayerResult,
     makeAIMove,
+    rollDiceMutation,
   ]);
 
   const checkVariantSeen = (variant: string): boolean => {
@@ -235,8 +229,6 @@ function App() {
     setSelectedPoint(null);
     setValidMoves([]);
     setShowFirstPlayerRoll(false);
-    setShowFirstPlayerResult(false);
-    setFirstPlayer(null);
     setFirstPlayerRollDone(false);
     setPreviousBoard(null);
     setLastMove(null);
@@ -251,9 +243,7 @@ function App() {
 
   const handleFirstPlayerRollComplete = async (player: "white" | "black") => {
     setShowFirstPlayerRoll(false);
-    setFirstPlayer(player);
     setFirstPlayerRollDone(true);
-    setShowFirstPlayerResult(true);
 
     // Set the starting player in the game
     if (gameId) {
@@ -268,11 +258,6 @@ function App() {
         );
       }
     }
-  };
-
-  const handleFirstPlayerResultClose = () => {
-    setShowFirstPlayerResult(false);
-    setFirstPlayer(null);
   };
 
   const rollDice = async () => {
@@ -502,7 +487,7 @@ function App() {
             )}
           </div>
           <button
-            className="py-2.5 px-5 text-sm border-none rounded-lg cursor-pointer font-bold transition-all relative z-0 font-['Orbitron','Audiowide',sans-serif] tracking-[1px] uppercase bg-gradient-to-br from-[#4CAF50] to-[#45a049] text-white shadow-[0_6px_20px_rgba(76,175,80,0.4),0_0_0_0_rgba(76,175,80,0.7)] animate-[pulseButton_2s_ease-in-out_infinite] border-2 border-white/30 relative overflow-hidden before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:w-0 before:h-0 before:rounded-full before:bg-white/30 before:-translate-x-1/2 before:-translate-y-1/2 before:transition-all before:duration-600 hover:before:w-[300px] hover:before:h-[300px] hover:bg-gradient-to-br hover:from-[#45a049] hover:to-[#4CAF50] hover:scale-110 hover:shadow-[0_8px_30px_rgba(76,175,80,0.6),0_0_0_4px_rgba(76,175,80,0.3)] active:scale-105 disabled:bg-gray-300/50 disabled:cursor-not-allowed disabled:transform-none disabled:animate-none disabled:shadow-none relative z-[1]"
+            className="py-2.5 px-5 text-sm border-none rounded-lg cursor-pointer font-bold transition-all relative z-[1] font-['Orbitron','Audiowide',sans-serif] tracking-[1px] uppercase bg-gradient-to-br from-[#4CAF50] to-[#45a049] text-white shadow-[0_6px_20px_rgba(76,175,80,0.4),0_0_0_0_rgba(76,175,80,0.7)] animate-[pulseButton_2s_ease-in-out_infinite] border-2 border-white/30 overflow-hidden before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:w-0 before:h-0 before:rounded-full before:bg-white/30 before:-translate-x-1/2 before:-translate-y-1/2 before:transition-all before:duration-600 hover:before:w-[300px] hover:before:h-[300px] hover:bg-gradient-to-br hover:from-[#45a049] hover:to-[#4CAF50] hover:scale-110 hover:shadow-[0_8px_30px_rgba(76,175,80,0.6),0_0_0_4px_rgba(76,175,80,0.3)] active:scale-105 disabled:bg-gray-300/50 disabled:cursor-not-allowed disabled:transform-none disabled:animate-none disabled:shadow-none"
             onClick={createNewGame}
             disabled={isLoading}
           >
@@ -537,7 +522,7 @@ function App() {
         {gameMessage &&
           gameState.legal_moves.length === 0 &&
           !gameState.board.game_over && (
-            <div className="absolute top-0 left-0 right-0 pointer-events-none">
+            <div className="absolute top-0 left-0 right-0 pointer-events-none z-30">
               <div className="px-4 py-2 bg-gradient-to-b from-[#f7f1c4] to-[#ede5b0] text-[#3d2b00] font-semibold text-sm text-center border-b border-[#e0d291] shadow-sm animate-[slideDown_0.6s_ease-out]">
                 {gameMessage}
               </div>
@@ -779,7 +764,7 @@ function App() {
       </div>
 
       {gameState.board.game_over && (
-        <div className="fixed inset-0 z-[950] flex items-center justify-center bg-black/80 p-4">
+        <div className="fixed inset-0 z-[2100] flex items-center justify-center bg-black/80 p-4">
           <div className="w-full max-w-lg rounded-[32px] border border-white/10 bg-slate-950/95 p-8 text-center shadow-[0_20px_60px_rgba(0,0,0,0.65)]">
             <div className="text-3xl font-black tracking-[0.08em] text-white">
               Game Over
@@ -811,12 +796,6 @@ function App() {
       <FirstPlayerRollModal
         isOpen={showFirstPlayerRoll}
         onComplete={handleFirstPlayerRollComplete}
-      />
-
-      <FirstPlayerResultModal
-        isOpen={showFirstPlayerResult}
-        firstPlayer={firstPlayer || "white"}
-        onClose={handleFirstPlayerResultClose}
       />
 
       <VariantRulesModal
