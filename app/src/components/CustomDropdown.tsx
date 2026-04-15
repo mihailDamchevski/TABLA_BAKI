@@ -77,9 +77,9 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
   return (
     <div className={`flex flex-col gap-2.5 items-center relative w-full ${isOpen ? 'z-[10002]' : 'z-10'}`} ref={dropdownRef}>
-      <label className="text-white text-base font-bold drop-shadow-[2px_2px_4px_rgba(0,0,0,0.3)] font-['Righteous','Bebas_Neue',cursive] tracking-[0.5px]">{label}</label>
+      <label className="text-white text-sm big:text-lg font-bold drop-shadow-[2px_2px_4px_rgba(0,0,0,0.3)] font-['Righteous','Bebas_Neue',cursive] tracking-[0.5px]">{label}</label>
       <div 
-        className={`py-2.5 px-[18px] text-sm rounded-[10px] border-2 border-white bg-white cursor-pointer font-bold text-gray-800 min-w-[200px] w-full transition-all shadow-[0_4px_15px_rgba(0,0,0,0.2)] flex justify-between items-center relative select-none box-border ${isOpen ? 'border-white rounded-b-none shadow-[0_6px_20px_rgba(0,0,0,0.3)]' : 'hover:bg-gray-50 hover:scale-105 hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)]'}`}
+        className={`py-2 px-3 big:py-3 big:px-5 text-sm big:text-base rounded-[10px] border-2 border-white bg-white cursor-pointer font-bold text-gray-800 min-w-[180px] big:min-w-[250px] w-full transition-all shadow-[0_4px_15px_rgba(0,0,0,0.2)] flex justify-between items-center relative select-none box-border ${isOpen ? 'border-white rounded-b-none shadow-[0_6px_20px_rgba(0,0,0,0.3)]' : 'hover:bg-gray-50 hover:scale-105 hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)]'}`}
         onClick={handleOpen}
       >
         <span className="flex-1 text-left">{displayValue}</span>
@@ -107,7 +107,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
               filteredOptions.map((option) => (
                 <div
                   key={option.value}
-                  className={`py-2.5 px-[18px] cursor-pointer transition-all text-gray-800 font-medium text-sm border-b border-gray-200 flex items-center gap-2 bg-white ${value === option.value ? 'bg-green-100 text-green-700 font-bold before:content-["✓"] before:text-green-500 before:inline-block before:flex-shrink-0 before:w-[18px] before:text-left before:mr-0' : ''} ${isPriority(option.value) ? 'bg-green-50 border-l-[3px] border-l-green-500 font-semibold' : ''} ${value !== option.value ? 'hover:bg-gray-100 hover:pl-5' : ''} last:border-b-0`}
+                  className={`py-2 px-3 big:py-3 big:px-5 cursor-pointer transition-all text-gray-800 font-medium text-sm big:text-base border-b border-gray-200 flex items-center gap-2 bg-white ${value === option.value ? 'bg-green-100 text-green-700 font-bold before:content-["✓"] before:text-green-500 before:inline-block before:flex-shrink-0 before:w-[18px] before:text-left before:mr-0' : ''} ${isPriority(option.value) ? 'bg-green-50 border-l-[3px] border-l-green-500 font-semibold' : ''} ${value !== option.value ? 'hover:bg-gray-100 hover:pl-5' : ''} last:border-b-0`}
                   onClick={() => handleSelect(option.value)}
                 >
                   {option.label}
