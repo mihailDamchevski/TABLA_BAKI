@@ -60,20 +60,24 @@ class GameService:
         dice = engine.roll_dice()
         legal_moves = self._get_legal_moves(engine)
 
-        # If no legal moves, skip turn
+        message = f"Rolled {dice[0]} and {dice[1]}."
+
         if not legal_moves and not engine.game_over:
             engine.switch_player()
+            next_player = engine.current_player.value if engine.current_player else "opponent"
+            message = f"Rolled {dice[0]} and {dice[1]}. No legal moves available, turn passes to {next_player}."
             return {
                 "dice": dice,
                 "legal_moves": [],
                 "game_state": self.get_game_state(game_id),
-                "message": "No legal moves; turn passed to opponent."
+                "message": message
             }
 
         return {
             "dice": dice,
             "legal_moves": legal_moves,
-            "game_state": self.get_game_state(game_id)
+            "game_state": self.get_game_state(game_id),
+            "message": message
         }
 
     def make_move(

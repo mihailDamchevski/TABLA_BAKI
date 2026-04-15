@@ -63,7 +63,7 @@ class Point:
 class Board:
     """Represents the backgammon board state."""
     
-    def __init__(self, num_points: int = 24):
+    def __init__(self, num_points: int = 24, rules=None):
         """Initialize board with given number of points."""
         self.num_points = num_points
         self.points: Dict[int, Point] = {}
@@ -75,6 +75,7 @@ class Board:
             PlayerColor.WHITE: 0,
             PlayerColor.BLACK: 0
         }
+        self.rules = rules
         
         # Initialize all points
         for i in range(1, num_points + 1):
@@ -114,12 +115,26 @@ class Board:
     def get_bearing_off_point(self, color: PlayerColor) -> Tuple[int, int]:
         """Get the range of points where pieces can bear off.
         Returns (start, end) inclusive.
-        For white: 1-6, for black: 19-24
+        Based on movement direction: for clockwise movement (-1), home is 1-6 for both players.
+        For counter-clockwise movement (1), white bears off 1-6, black bears off 19-24.
         """
-        if color == PlayerColor.WHITE:
-            return (1, 6)
+        if self.rules:
+            direction = self.rules.get_direction(color)
+            if direction == -1:
+                # Clockwise movement - both players bear off at low end
+                return (1, 6)
+            else:
+                # Counter-clockwise movement - standard backgammon
+                if color == PlayerColor.WHITE:
+                    return (1, 6)
+                else:
+                    return (19, 24)
         else:
-            return (19, 24)
+            # Fallback to standard backgammon
+            if color == PlayerColor.WHITE:
+                return (1, 6)
+            else:
+                return (19, 24)
     
     def can_bear_off(self, color: PlayerColor) -> bool:
         """Check if player can bear off (all pieces in home board)."""
@@ -154,7 +169,7 @@ class Board:
     
     def copy(self) -> 'Board':
         """Create a deep copy of the board."""
-        new_board = Board(self.num_points)
+        new_board = Board(self.num_points, self.rules)
         new_board.bar = self.bar.copy()
         new_board.borne_off = self.borne_off.copy()
         for point_num, point in self.points.items():

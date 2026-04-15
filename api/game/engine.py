@@ -17,7 +17,7 @@ class GameEngine:
             rules: RuleSet for the game variant
         """
         self.rules = rules
-        self.board = Board()
+        self.board = Board(rules=rules)
         self.current_player: Optional[PlayerColor] = None
         self.current_dice: Optional[Tuple[int, int]] = None
         self.used_dice: List[int] = []
@@ -213,8 +213,14 @@ class GameEngine:
             return die
 
     def _bearing_distance(self, color: PlayerColor, point_num: int) -> int:
-        """Calculate bearing distance from a point (1-6 for white, 1-6 for black from opposite end)."""
-        return point_num if color == PlayerColor.WHITE else 25 - point_num
+        """Calculate bearing distance from a point based on movement direction."""
+        direction = self.rules.get_direction(color)
+        if direction == -1:
+            # Clockwise movement - both players bear off at low end
+            return point_num
+        else:
+            # Counter-clockwise movement - standard backgammon
+            return point_num if color == PlayerColor.WHITE else 25 - point_num
 
     def _max_bearing_distance(self, color: PlayerColor) -> int:
         """Get the maximum bearing distance among occupied home points."""

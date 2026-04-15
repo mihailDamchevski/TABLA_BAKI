@@ -5,11 +5,15 @@ import type {
   LegalMove,
   MoveRequest,
   PlayerColor,
-} from '../types/game';
+} from "../types/game";
 
-const API_BASE_URL = (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_API_URL?.trim();
-const CONFIG_ERROR_MESSAGE = 'Game service is not configured. Please refresh the page or contact support.';
-const SERVER_UNREACHABLE_MESSAGE = 'Server is not responding right now. Please try again in a moment.';
+const API_BASE_URL = (
+  import.meta as { env?: Record<string, string | undefined> }
+).env?.VITE_API_URL?.trim();
+const CONFIG_ERROR_MESSAGE =
+  "Game service is not configured. Please refresh the page or contact support.";
+const SERVER_UNREACHABLE_MESSAGE =
+  "Server is not responding right now. Please try again in a moment.";
 
 class ApiClient {
   private baseUrl: string | null;
@@ -25,7 +29,11 @@ class ApiClient {
     return this.baseUrl;
   }
 
-  private async request<T>(endpoint: string, init: RequestInit, fallbackMessage: string): Promise<T> {
+  private async request<T>(
+    endpoint: string,
+    init: RequestInit,
+    fallbackMessage: string,
+  ): Promise<T> {
     const baseUrl = this.getBaseUrl();
 
     try {
@@ -35,7 +43,10 @@ class ApiClient {
         let detail: string | null = null;
         try {
           const errorData = await response.json();
-          if (typeof errorData?.detail === 'string' && errorData.detail.trim().length > 0) {
+          if (
+            typeof errorData?.detail === "string" &&
+            errorData.detail.trim().length > 0
+          ) {
             detail = errorData.detail;
           }
         } catch {
@@ -48,8 +59,8 @@ class ApiClient {
         return undefined as T;
       }
 
-      const contentType = response.headers.get('content-type') || '';
-      if (!contentType.includes('application/json')) {
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
         return undefined as T;
       }
 
@@ -60,7 +71,10 @@ class ApiClient {
           throw error;
         }
 
-        if (error instanceof TypeError || error.message.includes('Failed to fetch')) {
+        if (
+          error instanceof TypeError ||
+          error.message.includes("Failed to fetch")
+        ) {
           throw new Error(SERVER_UNREACHABLE_MESSAGE);
         }
 
@@ -73,9 +87,9 @@ class ApiClient {
 
   async listVariants(): Promise<string[]> {
     const data = await this.request<{ variants: string[] }>(
-      '/variants',
+      "/variants",
       {},
-      'Could not load game variants. Please try again.'
+      "Could not load game variants. Please try again.",
     );
     return data.variants;
   }
@@ -84,21 +98,24 @@ class ApiClient {
     return this.request(
       `/variants/${variant}`,
       {},
-      'Could not load variant rules. Please try again.'
+      "Could not load variant rules. Please try again.",
     );
   }
 
-  async createGame(variant: string = 'standard', gameId?: string): Promise<GameState> {
+  async createGame(
+    variant: string = "standard",
+    gameId?: string,
+  ): Promise<GameState> {
     return this.request(
-      '/games',
+      "/games",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ variant, game_id: gameId }),
       },
-      'Could not start a new game. Please try again.'
+      "Could not start a new game. Please try again.",
     );
   }
 
@@ -106,53 +123,72 @@ class ApiClient {
     return this.request(
       `/games/${gameId}`,
       {},
-      'Could not load the game state. Please try again.'
+      "Could not load the game state. Please try again.",
     );
   }
 
-  async rollDice(gameId: string): Promise<{ dice: [number, number]; legal_moves: LegalMove[]; game_state: GameState }> {
+  async rollDice(
+    gameId: string,
+  ): Promise<{
+    dice: [number, number];
+    legal_moves: LegalMove[];
+    game_state: GameState;
+    message?: string;
+  }> {
     return this.request(
       `/games/${gameId}/roll`,
       {
-        method: 'POST',
+        method: "POST",
       },
-      'Could not roll the dice. Please try again.'
+      "Could not roll the dice. Please try again.",
     );
   }
 
-  async makeMove(gameId: string, move: MoveRequest): Promise<{ success: boolean; explanations: string[]; game_state: GameState }> {
+  async makeMove(
+    gameId: string,
+    move: MoveRequest,
+  ): Promise<{
+    success: boolean;
+    explanations: string[];
+    game_state: GameState;
+  }> {
     return this.request(
       `/games/${gameId}/move`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(move),
       },
-      'Could not make that move. Please try again.'
+      "Could not make that move. Please try again.",
     );
   }
 
-  async getLegalMoves(gameId: string): Promise<{ legal_moves: LegalMove[]; dice?: [number, number] }> {
+  async getLegalMoves(
+    gameId: string,
+  ): Promise<{ legal_moves: LegalMove[]; dice?: [number, number] }> {
     return this.request(
       `/games/${gameId}/legal-moves`,
       {},
-      'Could not load legal moves. Please try again.'
+      "Could not load legal moves. Please try again.",
     );
   }
 
-  async setStartingPlayer(gameId: string, player: PlayerColor): Promise<GameState> {
+  async setStartingPlayer(
+    gameId: string,
+    player: PlayerColor,
+  ): Promise<GameState> {
     const data = await this.request<{ game_state: GameState }>(
       `/games/${gameId}/set-player`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ player }),
       },
-      'Could not set the starting player. Please try again.'
+      "Could not set the starting player. Please try again.",
     );
     return data.game_state;
   }
@@ -161,19 +197,27 @@ class ApiClient {
     await this.request(
       `/games/${gameId}`,
       {
-        method: 'DELETE',
+        method: "DELETE",
       },
-      'Could not close this game right now.'
+      "Could not close this game right now.",
     );
   }
 
-  async aiMove(gameId: string, difficulty: string = 'medium'): Promise<{ success: boolean; move?: any; explanations: string[]; game_state: GameState }> {
+  async aiMove(
+    gameId: string,
+    difficulty: string = "medium",
+  ): Promise<{
+    success: boolean;
+    move?: any;
+    explanations: string[];
+    game_state: GameState;
+  }> {
     return this.request(
       `/games/${gameId}/ai-move?difficulty=${difficulty}`,
       {
-        method: 'POST',
+        method: "POST",
       },
-      'AI move failed. Please try again.'
+      "AI move failed. Please try again.",
     );
   }
 }
