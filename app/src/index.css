@@ -399,4 +399,17 @@
       opacity: 0;
     }
   }
+
+  @keyframes rotateHint {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    40% {
+      transform: rotate(90deg);
+    }
+    60% {
+      transform: rotate(90deg);
+    }
+  }
 }

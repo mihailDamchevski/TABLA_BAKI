@@ -121,7 +121,7 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
       dots.push(
         <span 
           key={i} 
-          className={`w-[18px] h-[18px] rounded-full transition-opacity absolute ${dotClassName} ${positions.includes(i) ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-[12px] h-[12px] mid:w-[15px] mid:h-[15px] desktop:w-[18px] desktop:h-[18px] big:w-[21px] big:h-[21px] rounded-full transition-opacity absolute ${dotClassName} ${positions.includes(i) ? 'opacity-100' : 'opacity-0'}`}
           style={{
             gridColumn: `${(i % 3) + 1}`,
             gridRow: `${Math.floor(i / 3) + 1}`
@@ -144,13 +144,13 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
   const blackWinner = revealedWinner === 'black';
 
   const dieBoxClass =
-    "w-[120px] h-[120px] shrink-0 rounded-[15px] flex items-center justify-center relative overflow-hidden transition-transform duration-[850ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]";
+    "w-[80px] h-[80px] mid:w-[100px] mid:h-[100px] desktop:w-[120px] desktop:h-[120px] big:w-[140px] big:h-[140px] shrink-0 rounded-[10px] mid:rounded-[12px] desktop:rounded-[15px] flex items-center justify-center relative overflow-hidden transition-transform duration-[850ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]";
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[10000] backdrop-blur-sm">
-      <div className="bg-gradient-to-br from-[#2c3e50] to-[#34495e] rounded-[20px] p-10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] text-center min-w-[500px] max-w-[600px] animate-[modalSlideIn_0.3s_ease-out] overflow-x-clip overflow-y-visible">
-        <h2 className="text-white m-0 mb-2.5 text-[32px] font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">Determining First Player</h2>
-        <p className="text-[#ecf0f1] m-0 mb-7.5 text-lg">
+      <div className="bg-gradient-to-br from-[#2c3e50] to-[#34495e] rounded-[16px] mid:rounded-[18px] desktop:rounded-[20px] p-5 mid:p-7 desktop:p-10 big:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.5)] text-center w-[90%] mid:w-auto min-w-0 mid:min-w-[420px] desktop:min-w-[500px] big:min-w-[600px] max-w-[600px] big:max-w-[700px] animate-[modalSlideIn_0.3s_ease-out] overflow-x-clip overflow-y-visible">
+        <h2 className="text-white m-0 mb-2 mid:mb-2.5 text-xl mid:text-2xl desktop:text-[32px] big:text-[38px] font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">Determining First Player</h2>
+        <p className="text-[#ecf0f1] m-0 mb-4 mid:mb-5 desktop:mb-7.5 text-sm mid:text-base desktop:text-lg big:text-xl">
           {isCountdownActive
             ? "Who goes first? Tension build-up..."
             : revealedWinner
@@ -160,10 +160,10 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
 
         {/* Dice arena: winner scales up + centers; loser shrinks + slides off toward edge */}
         <div
-          className={`relative mx-auto my-7.5 w-full min-h-[260px] ${
+          className={`relative mx-auto my-4 mid:my-5 desktop:my-7.5 w-full min-h-[180px] mid:min-h-[220px] desktop:min-h-[260px] big:min-h-[300px] ${
             isRevealPhase
               ? "overflow-visible"
-              : "flex flex-row flex-wrap items-center justify-center gap-8 md:gap-10"
+              : "flex flex-row flex-wrap items-center justify-center gap-4 mid:gap-6 desktop:gap-8 big:gap-10"
           }`}
         >
           {/* White column */}
@@ -176,7 +176,7 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
                   : "absolute left-0 top-1/2 z-0 -translate-y-1/2 -translate-x-[28%] scale-[0.38] opacity-[0.22] blur-[2px] pointer-events-none"
             }`}
           >
-            <div className="text-2xl font-bold text-white uppercase font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">
+            <div className="text-base mid:text-lg desktop:text-2xl big:text-3xl font-bold text-white uppercase font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">
               White
             </div>
             <div
@@ -194,19 +194,19 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
                     {renderDots(whiteDie, "bg-black")}
                   </div>
                 ) : (
-                  <div className="text-5xl text-[#95a5a6] font-bold flex items-center justify-center w-full h-full absolute top-0 left-0">
+                  <div className="text-3xl mid:text-4xl desktop:text-5xl text-[#95a5a6] font-bold flex items-center justify-center w-full h-full absolute top-0 left-0">
                     ?
                   </div>
                 )}
               </div>
             </div>
             {whiteDie !== null && !isCountdownActive && (
-              <div className="text-[28px] font-bold text-white font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">
+              <div className="text-lg mid:text-xl desktop:text-[28px] big:text-[34px] font-bold text-white font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">
                 {whiteDie}
               </div>
             )}
             {isRevealPhase && whiteWinner && (
-              <div className="px-5 py-1.5 rounded-full bg-amber-300 text-black font-black text-sm tracking-[1px] uppercase animate-[scaleIn_0.45s_ease-out]">
+              <div className="px-3 py-1 mid:px-4 mid:py-1.5 desktop:px-5 desktop:py-1.5 rounded-full bg-amber-300 text-black font-black text-xs mid:text-sm desktop:text-sm big:text-base tracking-[1px] uppercase animate-[scaleIn_0.45s_ease-out]">
                 Winner
               </div>
             )}
@@ -220,7 +220,7 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
                 : "relative z-10 opacity-100"
             }`}
           >
-            <div className="text-[32px] font-bold text-[#f39c12] font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)] whitespace-nowrap">
+            <div className="text-xl mid:text-2xl desktop:text-[32px] big:text-[38px] font-bold text-[#f39c12] font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)] whitespace-nowrap">
               VS
             </div>
           </div>
@@ -235,7 +235,7 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
                   : "absolute right-0 top-1/2 z-0 -translate-y-1/2 translate-x-[28%] scale-[0.38] opacity-[0.22] blur-[2px] pointer-events-none"
             }`}
           >
-            <div className="text-2xl font-bold text-white uppercase font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">
+            <div className="text-base mid:text-lg desktop:text-2xl big:text-3xl font-bold text-white uppercase font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">
               Black
             </div>
             <div
@@ -253,19 +253,19 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
                     {renderDots(blackDie, "bg-white")}
                   </div>
                 ) : (
-                  <div className="text-5xl text-white/70 font-bold flex items-center justify-center w-full h-full absolute top-0 left-0">
+                  <div className="text-3xl mid:text-4xl desktop:text-5xl text-white/70 font-bold flex items-center justify-center w-full h-full absolute top-0 left-0">
                     ?
                   </div>
                 )}
               </div>
             </div>
             {blackDie !== null && !isCountdownActive && (
-              <div className="text-[28px] font-bold text-white font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">
+              <div className="text-lg mid:text-xl desktop:text-[28px] big:text-[34px] font-bold text-white font-['Righteous','Bebas_Neue',cursive] drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)]">
                 {blackDie}
               </div>
             )}
             {isRevealPhase && blackWinner && (
-              <div className="px-5 py-1.5 rounded-full bg-amber-300 text-black font-black text-sm tracking-[1px] uppercase animate-[scaleIn_0.45s_ease-out]">
+              <div className="px-3 py-1 mid:px-4 mid:py-1.5 desktop:px-5 desktop:py-1.5 rounded-full bg-amber-300 text-black font-black text-xs mid:text-sm desktop:text-sm big:text-base tracking-[1px] uppercase animate-[scaleIn_0.45s_ease-out]">
                 Winner
               </div>
             )}
@@ -273,8 +273,8 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
         </div>
 
         {isCountdownActive && (
-          <div className="mt-2.5 flex flex-col items-center gap-2.5">
-            <div className="relative w-[120px] h-[120px]">
+          <div className="mt-2 mid:mt-2.5 flex flex-col items-center gap-2 mid:gap-2.5">
+            <div className="relative w-[80px] h-[80px] mid:w-[100px] mid:h-[100px] desktop:w-[120px] desktop:h-[120px] big:w-[140px] big:h-[140px]">
               <svg
                 className="w-full h-full -rotate-90"
                 viewBox="0 0 120 120"
@@ -302,7 +302,7 @@ const FirstPlayerRollModal: React.FC<FirstPlayerRollModalProps> = ({ isOpen, onC
                   className="transition-[stroke-dashoffset] duration-75 ease-linear"
                 />
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl font-['Righteous','Bebas_Neue',cursive]">
+              <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm mid:text-base desktop:text-xl big:text-2xl font-['Righteous','Bebas_Neue',cursive]">
                 {countdownProgress}%
               </div>
             </div>

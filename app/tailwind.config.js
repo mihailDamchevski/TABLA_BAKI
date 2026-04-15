@@ -7,9 +7,10 @@ export default {
   theme: {
     extend: {
       screens: {
-        'touch': { 'raw': '(max-width: 1023px) and (orientation: landscape), (max-width: 1023px) and (max-height: 600px)' },
+        'mid': '842px',
         'desktop': '1024px',
         'big': '1600px',
+        'portrait-small': { 'raw': '(max-width: 841px) and (orientation: portrait)' },
       },
     },
   },

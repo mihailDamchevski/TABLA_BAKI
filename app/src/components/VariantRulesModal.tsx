@@ -15,13 +15,13 @@ const VariantRulesModal: React.FC<VariantRulesModalProps> = ({ isOpen, variant, 
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-[10000] animate-[fadeIn_0.2s_ease-out]" onClick={onClose}>
-      <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.5)] max-w-[600px] w-[90%] max-h-[85vh] flex flex-col animate-[slideUp_0.3s_ease-out] border-2 border-white/10" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-center py-6 px-7 border-b border-white/10">
-          <h2 className="m-0 text-2xl font-bold bg-gradient-to-br from-white to-[#a8d8ff] bg-clip-text text-transparent">📚 {variantName} Rules</h2>
-          <button className="bg-white/10 border-none text-white text-[32px] w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-all leading-none p-0 hover:bg-white/20 hover:rotate-90" onClick={onClose}>×</button>
+      <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-[16px] mid:rounded-[18px] desktop:rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.5)] max-w-[90%] mid:max-w-[520px] desktop:max-w-[600px] big:max-w-[700px] w-full max-h-[85vh] flex flex-col animate-[slideUp_0.3s_ease-out] border-2 border-white/10" onClick={(e) => e.stopPropagation()}>
+        <div className="flex justify-between items-center py-4 px-5 mid:py-5 mid:px-6 desktop:py-6 desktop:px-7 border-b border-white/10">
+          <h2 className="m-0 text-lg mid:text-xl desktop:text-2xl big:text-3xl font-bold bg-gradient-to-br from-white to-[#a8d8ff] bg-clip-text text-transparent">📚 {variantName} Rules</h2>
+          <button className="bg-white/10 border-none text-white text-xl mid:text-2xl desktop:text-[32px] w-8 h-8 mid:w-9 mid:h-9 desktop:w-10 desktop:h-10 big:w-11 big:h-11 rounded-full cursor-pointer flex items-center justify-center transition-all leading-none p-0 hover:bg-white/20 hover:rotate-90" onClick={onClose}>×</button>
         </div>
         
-        <div className="py-7 overflow-y-auto flex-1 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb:hover]:bg-white/30">
+        <div className="py-4 mid:py-5 desktop:py-7 px-5 mid:px-6 desktop:px-0 overflow-y-auto flex-1 text-xs mid:text-sm desktop:text-base [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb:hover]:bg-white/30">
           {rules ? (
             <>
               {rules.description && (
@@ -194,8 +194,8 @@ const VariantRulesModal: React.FC<VariantRulesModalProps> = ({ isOpen, variant, 
           )}
         </div>
 
-        <div className="py-5 px-7 border-t border-white/10 flex justify-end">
-          <button className="bg-gradient-to-br from-[#667eea] to-[#764ba2] border-none text-white py-3 px-8 rounded-[10px] text-base font-semibold cursor-pointer transition-all shadow-[0_4px_15px_rgba(102,126,234,0.4)] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(102,126,234,0.6)] active:translate-y-0" onClick={onClose}>
+        <div className="py-3 px-5 mid:py-4 mid:px-6 desktop:py-5 desktop:px-7 border-t border-white/10 flex justify-end">
+          <button className="bg-gradient-to-br from-[#667eea] to-[#764ba2] border-none text-white py-2 px-5 mid:py-2.5 mid:px-6 desktop:py-3 desktop:px-8 big:py-3.5 big:px-10 rounded-[10px] text-xs mid:text-sm desktop:text-base big:text-lg font-semibold cursor-pointer transition-all shadow-[0_4px_15px_rgba(102,126,234,0.4)] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(102,126,234,0.6)] active:translate-y-0" onClick={onClose}>
             Got it!
           </button>
         </div>

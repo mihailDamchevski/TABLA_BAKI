@@ -119,7 +119,7 @@ const Dice: React.FC<DiceProps> = ({
       dots.push(
         <span
           key={i}
-          className={`w-2 h-2 desktop:w-3 desktop:h-3 big:w-3.5 big:h-3.5 rounded-full transition-colors duration-700 ease-in-out ${positions.includes(i) ? `${dotColor} ${dotShadow}` : "bg-transparent"}`}
+          className={`w-2 h-2 mid:w-2.5 mid:h-2.5 desktop:w-3 desktop:h-3 big:w-3.5 big:h-3.5 rounded-full transition-colors duration-700 ease-in-out ${positions.includes(i) ? `${dotColor} ${dotShadow}` : "bg-transparent"}`}
         ></span>,
       );
     }
@@ -140,18 +140,18 @@ const Dice: React.FC<DiceProps> = ({
   const questionMarkColor = isWhiteTurn ? "text-[#8B4513]" : "text-gray-400";
   const textColor = isWhiteTurn ? "text-[#5c4a37]" : "text-white";
 
-  const dieClass = `w-[60px] h-[60px] desktop:w-[100px] desktop:h-[100px] big:w-[120px] big:h-[120px] ${diceBg} border-2 desktop:border-[3px] ${diceBorder} rounded-lg desktop:rounded-xl flex items-center justify-center cursor-pointer transition-[background-color,border-color,box-shadow] duration-700 ease-in-out ${diceShadow} relative ${isRolling ? "animate-[shake_0.1s_infinite] cursor-wait" : ""} ${disabled ? "cursor-not-allowed opacity-60" : ""} ${!disabled && !isRolling ? `hover:scale-110 ${diceHoverShadow}` : ""}`;
-  const dotGridClass = "grid grid-cols-3 grid-rows-3 w-12 h-12 desktop:w-20 desktop:h-20 big:w-24 big:h-24 gap-0.5 desktop:gap-1 p-1.5 desktop:p-2";
+  const dieClass = `w-[60px] h-[60px] mid:w-[76px] mid:h-[76px] desktop:w-[100px] desktop:h-[100px] big:w-[120px] big:h-[120px] ${diceBg} border-2 mid:border-[3px] desktop:border-[3px] ${diceBorder} rounded-lg mid:rounded-xl desktop:rounded-xl flex items-center justify-center cursor-pointer transition-[background-color,border-color,box-shadow] duration-700 ease-in-out ${diceShadow} relative ${isRolling ? "animate-[shake_0.1s_infinite] cursor-wait" : ""} ${disabled ? "cursor-not-allowed opacity-60" : ""} ${!disabled && !isRolling ? `hover:scale-110 ${diceHoverShadow}` : ""}`;
+  const dotGridClass = "grid grid-cols-3 grid-rows-3 w-12 h-12 mid:w-[60px] mid:h-[60px] desktop:w-20 desktop:h-20 big:w-24 big:h-24 gap-0.5 mid:gap-0.5 desktop:gap-1 p-1.5 mid:p-2 desktop:p-2";
 
   return (
-    <div className="flex flex-col items-center gap-2 desktop:gap-5 p-2 desktop:p-5">
+    <div className="flex flex-col items-center gap-2 mid:gap-3 desktop:gap-5 p-2 mid:p-3 desktop:p-5">
       <div className={dieClass} onClick={handleClick}>
         <div className="w-full h-full flex items-center justify-center relative">
           {die1Value !== null ? (
             <div className={dotGridClass}>{renderDots(die1Value)}</div>
           ) : (
             <div
-              className={`text-3xl desktop:text-5xl ${questionMarkColor} font-bold transition-colors duration-700 ease-in-out`}
+              className={`text-3xl mid:text-4xl desktop:text-5xl ${questionMarkColor} font-bold transition-colors duration-700 ease-in-out`}
             >
               ?
             </div>
@@ -165,7 +165,7 @@ const Dice: React.FC<DiceProps> = ({
             <div className={dotGridClass}>{renderDots(die2Value)}</div>
           ) : (
             <div
-              className={`text-3xl desktop:text-5xl ${questionMarkColor} font-bold transition-colors duration-700 ease-in-out`}
+              className={`text-3xl mid:text-4xl desktop:text-5xl ${questionMarkColor} font-bold transition-colors duration-700 ease-in-out`}
             >
               ?
             </div>
@@ -175,7 +175,7 @@ const Dice: React.FC<DiceProps> = ({
 
       {!dice && !disabled && (
         <div
-          className={`${textColor} text-xs desktop:text-lg font-bold mt-1 desktop:mt-2.5 drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)] transition-colors duration-700 ease-in-out text-center`}
+          className={`${textColor} text-xs mid:text-sm desktop:text-lg big:text-xl font-bold mt-1 mid:mt-1.5 desktop:mt-2.5 drop-shadow-[2px_2px_4px_rgba(0,0,0,0.5)] transition-colors duration-700 ease-in-out text-center`}
         >
           <span className="hidden desktop:inline">Click dice to roll</span>
           <span className="desktop:hidden">Tap to roll</span>
